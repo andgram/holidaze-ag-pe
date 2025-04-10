@@ -1,13 +1,11 @@
 const API_BASE_URL = 'https://v2.api.noroff.dev';
 const API_AUTH_LOGIN = `${API_BASE_URL}/auth/login`;
+const API_KEY = '2b649e70-e399-47a8-9012-aca6a0c1de0d'; // Your Noroff API key
 
-// Headers function adapted from your headers.js
 const headers = (token?: string) => {
   const headersObj = new Headers();
   headersObj.append('Content-Type', 'application/json');
-  // Add X-Noroff-API-Key if you provide it
-  // const API_KEY = 'your-api-key-here'; // Uncomment and set if needed
-  // if (API_KEY) headersObj.append('X-Noroff-API-Key', API_KEY);
+  headersObj.append('X-Noroff-API-Key', API_KEY); // Always include API key
   if (token) headersObj.append('Authorization', `Bearer ${token}`);
   return headersObj;
 };
@@ -48,7 +46,7 @@ export const loginUser = async (email: string, password: string) => {
   try {
     const response = await fetch(API_AUTH_LOGIN, {
       method: 'POST',
-      headers: headers(), // No token yet for login
+      headers: headers(), // No token needed for login
       body: JSON.stringify({ email, password }),
     });
 
@@ -79,7 +77,7 @@ export const createBooking = async (
   try {
     const response = await fetch(`${API_BASE_URL}/holidaze/bookings`, {
       method: 'POST',
-      headers: headers(token), // Pass token for auth
+      headers: headers(token), // Include both API key and token
       body: JSON.stringify({
         venueId,
         dateFrom,
@@ -88,6 +86,8 @@ export const createBooking = async (
       }),
     });
     if (!response.ok) {
+      const errorData = await response.json();
+      console.log('Booking error response:', errorData);
       throw new Error('Failed to create booking');
     }
     const data = await response.json();

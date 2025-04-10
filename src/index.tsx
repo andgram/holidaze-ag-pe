@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./pages/App";
+import VenueDetails from "./pages/VenueDetails";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -11,7 +12,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        {/* Add more routes later */}
+        <Route path="/venues/:id" element={<VenueDetails />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

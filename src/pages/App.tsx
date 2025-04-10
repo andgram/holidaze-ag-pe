@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchVenues } from "../api/venues";
+import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -35,7 +36,9 @@ function App() {
         <ul>
           {venues.map((venue) => (
             <li key={venue.id}>
-              <h3>{venue.name}</h3>
+              <h3>
+                <Link to={`/venues/${venue.id}`}>{venue.name}</Link>
+              </h3>
               <p>{venue.description}</p>
               <p>Price: ${venue.price}</p>
             </li>

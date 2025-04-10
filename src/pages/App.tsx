@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchVenues } from "../api/venues";
+import { fetchVenues } from "../api/api";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";

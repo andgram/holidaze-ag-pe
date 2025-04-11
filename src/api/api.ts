@@ -26,6 +26,23 @@ export const fetchVenues = async () => {
   }
 };
 
+export const searchVenues = async (query: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/holidaze/venues/search?q=${encodeURIComponent(query)}`, {
+      headers: headers(),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to search venues');
+    }
+    const data = await response.json();
+    console.log('Search API response:', data.data); // Debug
+    return data.data;
+  } catch (error) {
+    console.error('Error searching venues:', error);
+    return [];
+  }
+};
+
 export const fetchVenueById = async (id: string) => {
   try {
     const response = await fetch(`${API_BASE_URL}/holidaze/venues/${id}?_owner=true`, {
@@ -240,7 +257,6 @@ export const fetchUserVenues = async (token: string, profileName: string) => {
   }
 };
 
-// ... (previous imports and functions remain unchanged)
 
 export const deleteVenue = async (token: string, venueId: string) => {
   try {
@@ -252,14 +268,13 @@ export const deleteVenue = async (token: string, venueId: string) => {
       const errorData = await response.json();
       throw new Error(errorData.errors?.[0]?.message || 'Failed to delete venue');
     }
-    return true; // DELETE returns 204 No Content on success
+    return true;
   } catch (error) {
     console.error('Error deleting venue:', error);
     return false;
   }
 };
 
-// Add this placeholder for editVenue - we'll flesh it out later
 export const editVenue = async (
   token: string,
   venueId: string,

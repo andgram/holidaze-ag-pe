@@ -117,3 +117,58 @@ export const fetchUserBookings = async (token: string, profileName: string) => {
     return [];
   }
 };
+
+export const fetchProfile = async (token: string, profileName: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/holidaze/profiles/${profileName}`, {
+      headers: headers(token),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch profile');
+    }
+    const data = await response.json();
+    console.log('Profile API response:', data.data); // Debug
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    return null;
+  }
+};
+
+export const updateProfile = async (
+  token: string,
+  profileName: string,
+  bio?: string,
+  avatarUrl?: string,
+  avatarAlt?: string,
+  bannerUrl?: string,
+  bannerAlt?: string,
+  venueManager?: boolean
+) => {
+  try {
+    const body: any = {};
+    if (bio !== undefined) body.bio = bio;
+    if (avatarUrl) body.avatar = { url: avatarUrl, alt: avatarAlt || 'User avatar' };
+    if (bannerUrl) body.banner = { url: bannerUrl, alt: bannerAlt || 'Profile banner' };
+    if (venueManager !== undefined) body.venueManager = venueManager;
+
+    if (Object.keys(body).length === 0) {
+      throw new Error('At least one field must be provided to update');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/holidaze/profiles/${profileName}`, {
+      method: 'PUT',
+      headers: headers(token),
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.errors?.[0]?.message || 'Failed to update profile');
+    }
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    return null;
+  }
+};

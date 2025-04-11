@@ -49,8 +49,6 @@ export const registerUser = async (
   }
 };
 
-// ... (rest of the file unchanged, keeping fetchVenues, loginUser, etc.)
-
 export const fetchVenues = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/holidaze/venues`, {
@@ -127,30 +125,34 @@ export const loginUser = async (email: string, password: string) => {
 };
 
 export const createBooking = async (
-  venueId: string,
+  token: string,
   dateFrom: string,
   dateTo: string,
   guests: number,
-  token: string
+  venueId: string
 ) => {
   try {
+    const body = {
+      dateFrom,
+      dateTo,
+      guests,
+      venueId,
+    };
+
     const response = await fetch(`${API_BASE_URL}/holidaze/bookings`, {
       method: 'POST',
       headers: headers(token),
-      body: JSON.stringify({
-        venueId,
-        dateFrom,
-        dateTo,
-        guests,
-      }),
+      body: JSON.stringify(body),
     });
+
     if (!response.ok) {
       const errorData = await response.json();
-      console.log('Booking error response:', errorData);
-      throw new Error('Failed to create booking');
+      const errorMessage = errorData.errors?.[0]?.message || 'Failed to create booking';
+      throw new Error(errorMessage);
     }
+
     const data = await response.json();
-    return data.data;
+    return data.data; // Returns the created booking
   } catch (error) {
     console.error('Error creating booking:', error);
     return null;
@@ -297,6 +299,7 @@ export const fetchUserVenues = async (token: string, profileName: string) => {
     return [];
   }
 };
+
 
 
 export const deleteVenue = async (token: string, venueId: string) => {

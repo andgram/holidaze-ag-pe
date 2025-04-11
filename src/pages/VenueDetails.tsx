@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { fetchVenueById, deleteVenue } from "../api/api";
+import { fetchVenueById, deleteVenue, createBooking } from "../api/api";
 import Header from "../components/Header";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface Venue {
   id: string;
@@ -27,6 +29,10 @@ function VenueDetails() {
   const [venue, setVenue] = useState<Venue | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dateFrom, setDateFrom] = useState<Date | null>(null);
+  const [dateTo, setDateTo] = useState<Date | null>(null);
+  const [guests, setGuests] = useState<number>(1);
+  const [bookingError, setBookingError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadVenue = async () => {
@@ -48,6 +54,34 @@ function VenueDetails() {
       navigate("/profile");
     } else {
       setError("Failed to delete venue");
+    }
+  };
+
+  const handleBooking = async () => {
+    if (
+      !token ||
+      !id ||
+      !dateFrom ||
+      !dateTo ||
+      guests < 1 ||
+      guests > (venue?.maxGuests || 0)
+    ) {
+      setBookingError("Please select valid dates and number of guests");
+      return;
+    }
+
+    const booking = await createBooking(
+      token,
+      dateFrom.toISOString(),
+      dateTo.toISOString(),
+      guests,
+      id
+    );
+
+    if (booking) {
+      navigate("/profile");
+    } else {
+      setBookingError("Failed to create booking");
     }
   };
 
@@ -76,13 +110,69 @@ function VenueDetails() {
         <li>Breakfast: {venue.meta.breakfast ? "Yes" : "No"}</li>
         <li>Pets: {venue.meta.pets ? "Yes" : "No"}</li>
       </ul>
-      {isOwner && token && (
+
+      {isOwner && token ? (
         <div>
           <button onClick={() => navigate(`/edit-venue/${venue.id}`)}>
             Edit Venue
           </button>
           <button onClick={handleDelete}>Delete Venue</button>
           {error && <p>{error}</p>}
+        </div>
+      ) : (
+        <div>
+          <h2>Book This Venue</h2>
+          <div>
+            <label>
+              Start Date:
+              <DatePicker
+                selected={dateFrom}
+                onChange={(date: Date | null) => setDateFrom(date)}
+                selectsStart
+                startDate={dateFrom}
+                endDate={dateTo}
+                minDate={new Date()}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select start date"
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              End Date:
+              <DatePicker
+                selected={dateTo}
+                onChange={(date: Date | null) => setDateTo(date)}
+                selectsEnd
+                startDate={dateFrom}
+                endDate={dateTo}
+                minDate={dateFrom || new Date()}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select end date"
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Number of Guests (max {venue.maxGuests}):
+              <input
+                type="number"
+                value={guests}
+                onChange={(e) =>
+                  setGuests(
+                    Math.max(
+                      1,
+                      Math.min(venue.maxGuests, Number(e.target.value))
+                    )
+                  )
+                }
+                min="1"
+                max={venue.maxGuests}
+              />
+            </label>
+          </div>
+          <button onClick={handleBooking}>Book Now</button>
+          {bookingError && <p>{bookingError}</p>}
         </div>
       )}
     </div>

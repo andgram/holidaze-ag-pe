@@ -1,11 +1,11 @@
 const API_BASE_URL = 'https://v2.api.noroff.dev';
 const API_AUTH_LOGIN = `${API_BASE_URL}/auth/login`;
-const API_KEY = '2b649e70-e399-47a8-9012-aca6a0c1de0d'; // Your Noroff API key
+const API_KEY = '2b649e70-e399-47a8-9012-aca6a0c1de0d';
 
 const headers = (token?: string) => {
   const headersObj = new Headers();
   headersObj.append('Content-Type', 'application/json');
-  headersObj.append('X-Noroff-API-Key', API_KEY); // Always include API key
+  headersObj.append('X-Noroff-API-Key', API_KEY);
   if (token) headersObj.append('Authorization', `Bearer ${token}`);
   return headersObj;
 };
@@ -46,7 +46,7 @@ export const loginUser = async (email: string, password: string) => {
   try {
     const response = await fetch(API_AUTH_LOGIN, {
       method: 'POST',
-      headers: headers(), // No token needed for login
+      headers: headers(),
       body: JSON.stringify({ email, password }),
     });
 
@@ -77,7 +77,7 @@ export const createBooking = async (
   try {
     const response = await fetch(`${API_BASE_URL}/holidaze/bookings`, {
       method: 'POST',
-      headers: headers(token), // Include both API key and token
+      headers: headers(token),
       body: JSON.stringify({
         venueId,
         dateFrom,
@@ -95,5 +95,25 @@ export const createBooking = async (
   } catch (error) {
     console.error('Error creating booking:', error);
     return null;
+  }
+};
+
+export const fetchUserBookings = async (token: string, profileName: string) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/holidaze/profiles/${profileName}/bookings?_venue=true`,
+      {
+        headers: headers(token),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Failed to fetch bookings');
+    }
+    const data = await response.json();
+    console.log('Bookings API response (first item):', data.data[0]);
+    return data.data.filter((booking: any) => new Date(booking.dateTo) >= new Date());
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    return [];
   }
 };

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { fetchVenueById, deleteVenue } from "../api/api";
+import Header from "../components/Header";
 
 interface Venue {
   id: string;
@@ -16,7 +17,7 @@ interface Venue {
     breakfast: boolean;
     pets: boolean;
   };
-  owner: { name: string }; // Now included with _owner=true
+  owner: { name: string };
 }
 
 function VenueDetails() {
@@ -54,12 +55,10 @@ function VenueDetails() {
   if (!venue) return <div>Venue not found</div>;
 
   const isOwner = user?.name === venue.owner.name;
-  console.log("isOwner:", isOwner);
-  console.log("user?.name:", user?.name);
-  console.log("venue.owner.name:", venue.owner.name);
 
   return (
     <div>
+      <Header />
       <h1>{venue.name}</h1>
       <p>{venue.description}</p>
       <p>Price: ${venue.price} per night</p>

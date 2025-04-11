@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { fetchVenueById, editVenue } from "../api/api";
+import Header from "../components/Header";
 
 function EditVenue() {
   const { id } = useParams<{ id: string }>();
@@ -90,6 +91,7 @@ function EditVenue() {
 
   return (
     <div>
+      <Header />
       <form onSubmit={handleSubmit}>
         <h2>Edit Venue</h2>
         <div>

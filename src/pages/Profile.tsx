@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom"; // Add Link
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   fetchUserBookings,
@@ -7,6 +7,7 @@ import {
   updateProfile,
   fetchUserVenues,
 } from "../api/api";
+import Header from "../components/Header";
 
 interface Booking {
   id: string;
@@ -98,6 +99,7 @@ function Profile() {
 
   return (
     <div>
+      <Header />
       <h1>Welcome, {profile?.name}</h1>
       <section>
         <h2>Profile Info</h2>

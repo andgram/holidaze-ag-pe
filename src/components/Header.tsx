@@ -1,26 +1,28 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function Header() {
-  const { user, logout } = useAuth();
+  const { user, token, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <header>
-      <h1>Holidaze</h1>
       <nav>
-        <Link to="/">Home</Link> |{" "}
-        {user ? (
+        <Link to="/">Home</Link>
+        {user && token ? (
           <>
-            <Link to="/profile">Profile</Link> |{" "}
-            <Link to="/add-venue">Add Venue</Link> |{" "}
-            <button onClick={logout}>Logout</button>
+            <Link to="/profile">Profile</Link>
+            <Link to="/add-venue">Add Venue</Link>
+            <button onClick={handleLogout}>Logout</button>
           </>
         ) : (
-          <>
-            <Link to="/login">Login</Link> |{" "}
-            <Link to="/register">Register</Link>
-          </>
+          <Link to="/login">Login</Link>
         )}
       </nav>
     </header>

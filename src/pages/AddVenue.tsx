@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { createVenue } from "../api/api";
+import Header from "../components/Header";
 
 function AddVenue() {
   const { token } = useAuth();
@@ -59,6 +60,7 @@ function AddVenue() {
 
   return (
     <div>
+      <Header />
       <form onSubmit={handleSubmit}>
         <h2>Add a Venue</h2>
         <div>

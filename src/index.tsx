@@ -5,6 +5,7 @@ import { AuthProvider } from "./context/AuthContext";
 import App from "./pages/App";
 import VenueDetails from "./pages/VenueDetails";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import AddVenue from "./pages/AddVenue";
 import EditVenue from "./pages/EditVenue";
@@ -20,6 +21,7 @@ root.render(
           <Route path="/" element={<App />} />
           <Route path="/venues/:id" element={<VenueDetails />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/add-venue" element={<AddVenue />} />
           <Route path="/edit-venue/:id" element={<EditVenue />} />

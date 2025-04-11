@@ -1,5 +1,6 @@
 const API_BASE_URL = 'https://v2.api.noroff.dev';
 const API_AUTH_LOGIN = `${API_BASE_URL}/auth/login`;
+const API_AUTH_REGISTER = `${API_BASE_URL}/auth/register`; // New
 const API_KEY = '2b649e70-e399-47a8-9012-aca6a0c1de0d';
 
 const headers = (token?: string) => {
@@ -9,6 +10,46 @@ const headers = (token?: string) => {
   if (token) headersObj.append('Authorization', `Bearer ${token}`);
   return headersObj;
 };
+
+export const registerUser = async (
+  name: string,
+  email: string,
+  password: string,
+  bio?: string,
+  avatarUrl?: string,
+  avatarAlt?: string,
+  bannerUrl?: string,
+  bannerAlt?: string,
+  venueManager?: boolean
+) => {
+  try {
+    const body: any = { name, email, password };
+    if (bio) body.bio = bio;
+    if (avatarUrl) body.avatar = { url: avatarUrl, alt: avatarAlt || '' };
+    if (bannerUrl) body.banner = { url: bannerUrl, alt: bannerAlt || '' };
+    if (venueManager !== undefined) body.venueManager = venueManager;
+
+    const response = await fetch(API_AUTH_REGISTER, {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      const errorMessage = errorData.errors?.[0]?.message || 'Registration failed';
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    return data.data; // Returns the created user profile
+  } catch (error) {
+    console.error('Error registering user:', error);
+    return null;
+  }
+};
+
+// ... (rest of the file unchanged, keeping fetchVenues, loginUser, etc.)
 
 export const fetchVenues = async () => {
   try {

@@ -1,42 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchVenueById, createBooking } from "../api/api";
 import { useAuth } from "../context/AuthContext";
+import { fetchVenueById, deleteVenue } from "../api/api";
 
 interface Venue {
   id: string;
   name: string;
   description: string;
   price: number;
-  location: {
-    address: string;
-    city: string;
-    country: string;
+  maxGuests: number;
+  media: { url: string; alt: string }[];
+  meta: {
+    wifi: boolean;
+    parking: boolean;
+    breakfast: boolean;
+    pets: boolean;
   };
-}
-
-interface Booking {
-  id: string;
-  venueId: string;
-  dateFrom: string;
-  dateTo: string;
-  guests: number;
+  owner: { name: string }; // Now included with _owner=true
 }
 
 function VenueDetails() {
   const { id } = useParams<{ id: string }>();
-  const { token } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
   const [venue, setVenue] = useState<Venue | null>(null);
   const [loading, setLoading] = useState(true);
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  const [guests, setGuests] = useState(1);
-  const [bookingStatus, setBookingStatus] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadVenue = async () => {
-      if (!id) return;
+      if (!id) {
+        setLoading(false);
+        return;
+      }
       const venueData = await fetchVenueById(id);
       setVenue(venueData);
       setLoading(false);
@@ -44,85 +40,52 @@ function VenueDetails() {
     loadVenue();
   }, [id]);
 
-  const handleBookingSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!id) return;
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    setBookingStatus("Creating booking...");
-    const booking = await createBooking(id, dateFrom, dateTo, guests, token);
-    if (booking) {
-      setBookingStatus("Booking created successfully!");
-      setDateFrom("");
-      setDateTo("");
-      setGuests(1);
+  const handleDelete = async () => {
+    if (!token || !id) return;
+    const success = await deleteVenue(token, id);
+    if (success) {
+      navigate("/profile");
     } else {
-      setBookingStatus("Failed to create booking. Please try again.");
+      setError("Failed to delete venue");
     }
   };
 
-  if (loading) {
-    return <div>Loading venue details...</div>;
-  }
+  if (loading) return <div>Loading venue...</div>;
+  if (!venue) return <div>Venue not found</div>;
 
-  if (!venue) {
-    return <div>Venue not found</div>;
-  }
+  const isOwner = user?.name === venue.owner.name;
+  console.log("isOwner:", isOwner);
+  console.log("user?.name:", user?.name);
+  console.log("venue.owner.name:", venue.owner.name);
 
   return (
     <div>
       <h1>{venue.name}</h1>
       <p>{venue.description}</p>
-      <p>Price: ${venue.price}</p>
-      <p>
-        Location: {venue.location.address}, {venue.location.city},{" "}
-        {venue.location.country}
-      </p>
-
-      <h2>Book This Venue</h2>
-      <form onSubmit={handleBookingSubmit}>
+      <p>Price: ${venue.price} per night</p>
+      <p>Max Guests: {venue.maxGuests}</p>
+      {venue.media.length > 0 && (
+        <img
+          src={venue.media[0].url}
+          alt={venue.media[0].alt}
+          style={{ maxWidth: "300px" }}
+        />
+      )}
+      <ul>
+        <li>Wifi: {venue.meta.wifi ? "Yes" : "No"}</li>
+        <li>Parking: {venue.meta.parking ? "Yes" : "No"}</li>
+        <li>Breakfast: {venue.meta.breakfast ? "Yes" : "No"}</li>
+        <li>Pets: {venue.meta.pets ? "Yes" : "No"}</li>
+      </ul>
+      {isOwner && token && (
         <div>
-          <label>
-            Check-in Date:
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              required
-            />
-          </label>
+          <button onClick={() => navigate(`/edit-venue/${venue.id}`)}>
+            Edit Venue
+          </button>
+          <button onClick={handleDelete}>Delete Venue</button>
+          {error && <p>{error}</p>}
         </div>
-        <div>
-          <label>
-            Check-out Date:
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              required
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Guests:
-            <input
-              type="number"
-              min="1"
-              value={guests}
-              onChange={(e) => setGuests(parseInt(e.target.value))}
-              required
-            />
-          </label>
-        </div>
-        <button type="submit">Book Now</button>
-      </form>
-      {bookingStatus && <p>{bookingStatus}</p>}
-
-      <a href="/">Back to Home</a>
+      )}
     </div>
   );
 }

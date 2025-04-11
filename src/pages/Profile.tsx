@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Add Link
 import { useAuth } from "../context/AuthContext";
 import {
   fetchUserBookings,
@@ -199,7 +199,9 @@ function Profile() {
           <ul>
             {venues.map((venue) => (
               <li key={venue.id}>
-                <h3>{venue.name}</h3>
+                <Link to={`/venues/${venue.id}`}>
+                  <h3>{venue.name}</h3>
+                </Link>
               </li>
             ))}
           </ul>

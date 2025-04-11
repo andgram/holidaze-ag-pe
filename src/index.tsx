@@ -7,6 +7,7 @@ import VenueDetails from "./pages/VenueDetails";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import AddVenue from "./pages/AddVenue";
+import EditVenue from "./pages/EditVenue";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -21,6 +22,7 @@ root.render(
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/add-venue" element={<AddVenue />} />
+          <Route path="/edit-venue/:id" element={<EditVenue />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

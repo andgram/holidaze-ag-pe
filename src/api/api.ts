@@ -28,13 +28,14 @@ export const fetchVenues = async () => {
 
 export const fetchVenueById = async (id: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/holidaze/venues/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/holidaze/venues/${id}?_owner=true`, {
       headers: headers(),
     });
     if (!response.ok) {
       throw new Error(`Failed to fetch venue ${id}`);
     }
     const data = await response.json();
+    console.log('Venue API response:', data.data); // Debug owner field
     return data.data;
   } catch (error) {
     console.error(`Error fetching venue ${id}:`, error);
@@ -236,5 +237,72 @@ export const fetchUserVenues = async (token: string, profileName: string) => {
   } catch (error) {
     console.error('Error fetching user venues:', error);
     return [];
+  }
+};
+
+// ... (previous imports and functions remain unchanged)
+
+export const deleteVenue = async (token: string, venueId: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/holidaze/venues/${venueId}`, {
+      method: 'DELETE',
+      headers: headers(token),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.errors?.[0]?.message || 'Failed to delete venue');
+    }
+    return true; // DELETE returns 204 No Content on success
+  } catch (error) {
+    console.error('Error deleting venue:', error);
+    return false;
+  }
+};
+
+// Add this placeholder for editVenue - we'll flesh it out later
+export const editVenue = async (
+  token: string,
+  venueId: string,
+  name: string,
+  description: string,
+  media: { url: string; alt: string }[],
+  price: number,
+  maxGuests: number,
+  wifi: boolean,
+  parking: boolean,
+  breakfast: boolean,
+  pets: boolean,
+  address?: string,
+  city?: string,
+  zip?: string,
+  country?: string
+) => {
+  try {
+    const body: any = {
+      name,
+      description,
+      media: media.length > 0 ? media : undefined,
+      price,
+      maxGuests,
+      meta: { wifi, parking, breakfast, pets },
+    };
+    if (address || city || zip || country) {
+      body.location = { address, city, zip, country };
+    }
+
+    const response = await fetch(`${API_BASE_URL}/holidaze/venues/${venueId}`, {
+      method: 'PUT',
+      headers: headers(token),
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.errors?.[0]?.message || 'Failed to edit venue');
+    }
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error editing venue:', error);
+    return null;
   }
 };

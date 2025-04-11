@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { fetchUserBookings, fetchProfile, updateProfile } from "../api/api";
+import {
+  fetchUserBookings,
+  fetchProfile,
+  updateProfile,
+  fetchUserVenues,
+} from "../api/api";
 
 interface Booking {
   id: string;
@@ -23,11 +28,17 @@ interface ProfileData {
   venueManager: boolean;
 }
 
+interface Venue {
+  id: string;
+  name: string;
+}
+
 function Profile() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [bio, setBio] = useState("");
@@ -43,12 +54,14 @@ function Profile() {
     }
 
     const loadData = async () => {
-      const [bookingData, profileData] = await Promise.all([
+      const [bookingData, profileData, venueData] = await Promise.all([
         fetchUserBookings(token, user.name),
         fetchProfile(token, user.name),
+        fetchUserVenues(token, user.name),
       ]);
       setBookings(bookingData);
       setProfile(profileData);
+      setVenues(venueData);
       setBio(profileData?.bio || "");
       setAvatarUrl(profileData?.avatar?.url || "");
       setBannerUrl(profileData?.banner?.url || "");
@@ -180,7 +193,17 @@ function Profile() {
 
       <section>
         <h2>Your Venues</h2>
-        <p>No venues created yet.</p>
+        {venues.length === 0 ? (
+          <p>No venues created yet.</p>
+        ) : (
+          <ul>
+            {venues.map((venue) => (
+              <li key={venue.id}>
+                <h3>{venue.name}</h3>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

@@ -218,3 +218,23 @@ export const createVenue = async (
     return null;
   }
 };
+
+export const fetchUserVenues = async (token: string, profileName: string) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/holidaze/profiles/${profileName}/venues`,
+      {
+        headers: headers(token),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Failed to fetch user venues');
+    }
+    const data = await response.json();
+    console.log('User Venues API response (first item):', data.data[0]);
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching user venues:', error);
+    return [];
+  }
+};

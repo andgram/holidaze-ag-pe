@@ -13,6 +13,7 @@ function Register() {
   const [bannerUrl, setBannerUrl] = useState("");
   const [bannerAlt, setBannerAlt] = useState("");
   const [venueManager, setVenueManager] = useState(false);
+  const [showOptional, setShowOptional] = useState(false); // New toggle state
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,7 +67,7 @@ function Register() {
     );
 
     if (user) {
-      navigate("/login"); // Redirect to login after success
+      navigate("/login");
     } else {
       setError("Failed to register user");
     }
@@ -119,74 +120,83 @@ function Register() {
           </label>
         </div>
         <div>
-          <label>
-            Bio (optional, max 160 characters):
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={3}
-              maxLength={160}
-            />
-          </label>
+          <button type="button" onClick={() => setShowOptional(!showOptional)}>
+            {showOptional ? "Hide Optional Fields" : "Show Optional Fields"}
+          </button>
         </div>
-        <div>
-          <label>
-            Avatar URL (optional):
-            <input
-              type="url"
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
-              placeholder="https://example.com/avatar.jpg"
-            />
-          </label>
-        </div>
-        {avatarUrl && (
-          <div>
-            <label>
-              Avatar Alt Text (optional, max 120 characters):
-              <input
-                type="text"
-                value={avatarAlt}
-                onChange={(e) => setAvatarAlt(e.target.value)}
-                maxLength={120}
-              />
-            </label>
-          </div>
+        {showOptional && (
+          <>
+            <div>
+              <label>
+                Bio (optional, max 160 characters):
+                <textarea
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  rows={3}
+                  maxLength={160}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Avatar URL (optional):
+                <input
+                  type="url"
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
+                  placeholder="https://example.com/avatar.jpg"
+                />
+              </label>
+            </div>
+            {avatarUrl && (
+              <div>
+                <label>
+                  Avatar Alt Text (optional, max 120 characters):
+                  <input
+                    type="text"
+                    value={avatarAlt}
+                    onChange={(e) => setAvatarAlt(e.target.value)}
+                    maxLength={120}
+                  />
+                </label>
+              </div>
+            )}
+            <div>
+              <label>
+                Banner URL (optional):
+                <input
+                  type="url"
+                  value={bannerUrl}
+                  onChange={(e) => setBannerUrl(e.target.value)}
+                  placeholder="https://example.com/banner.jpg"
+                />
+              </label>
+            </div>
+            {bannerUrl && (
+              <div>
+                <label>
+                  Banner Alt Text (optional, max 120 characters):
+                  <input
+                    type="text"
+                    value={bannerAlt}
+                    onChange={(e) => setBannerAlt(e.target.value)}
+                    maxLength={120}
+                  />
+                </label>
+              </div>
+            )}
+            <div>
+              <label>
+                Venue Manager:
+                <input
+                  type="checkbox"
+                  checked={venueManager}
+                  onChange={(e) => setVenueManager(e.target.checked)}
+                />
+              </label>
+            </div>
+          </>
         )}
-        <div>
-          <label>
-            Banner URL (optional):
-            <input
-              type="url"
-              value={bannerUrl}
-              onChange={(e) => setBannerUrl(e.target.value)}
-              placeholder="https://example.com/banner.jpg"
-            />
-          </label>
-        </div>
-        {bannerUrl && (
-          <div>
-            <label>
-              Banner Alt Text (optional, max 120 characters):
-              <input
-                type="text"
-                value={bannerAlt}
-                onChange={(e) => setBannerAlt(e.target.value)}
-                maxLength={120}
-              />
-            </label>
-          </div>
-        )}
-        <div>
-          <label>
-            Venue Manager:
-            <input
-              type="checkbox"
-              checked={venueManager}
-              onChange={(e) => setVenueManager(e.target.checked)}
-            />
-          </label>
-        </div>
         <button type="submit">Register</button>
         {error && <p>{error}</p>}
       </form>

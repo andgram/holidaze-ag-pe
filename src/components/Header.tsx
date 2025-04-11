@@ -9,14 +9,18 @@ function Header() {
     <header>
       <h1>Holidaze</h1>
       <nav>
-        <Link to="/">Home</Link> | <Link to="/venues">Venues</Link> |{" "}
+        <Link to="/">Home</Link> |{" "}
         {user ? (
           <>
-            <span>Welcome, {user.name}</span> |{" "}
+            <Link to="/profile">Profile</Link> |{" "}
+            <Link to="/add-venue">Add Venue</Link> |{" "}
             <button onClick={logout}>Logout</button>
           </>
         ) : (
-          <Link to="/login">Login</Link>
+          <>
+            <Link to="/login">Login</Link> |{" "}
+            <Link to="/register">Register</Link>
+          </>
         )}
       </nav>
     </header>

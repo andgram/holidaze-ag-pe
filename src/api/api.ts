@@ -127,7 +127,7 @@ export const fetchProfile = async (token: string, profileName: string) => {
       throw new Error('Failed to fetch profile');
     }
     const data = await response.json();
-    console.log('Profile API response:', data.data); // Debug
+    console.log('Profile API response:', data.data);
     return data.data;
   } catch (error) {
     console.error('Error fetching profile:', error);
@@ -169,6 +169,52 @@ export const updateProfile = async (
     return data.data;
   } catch (error) {
     console.error('Error updating profile:', error);
+    return null;
+  }
+};
+
+export const createVenue = async (
+  token: string,
+  name: string,
+  description: string,
+  media: { url: string; alt: string }[],
+  price: number,
+  maxGuests: number,
+  wifi: boolean,
+  parking: boolean,
+  breakfast: boolean,
+  pets: boolean,
+  address?: string,
+  city?: string,
+  zip?: string,
+  country?: string
+) => {
+  try {
+    const body: any = {
+      name,
+      description,
+      media: media.length > 0 ? media : undefined,
+      price,
+      maxGuests,
+      meta: { wifi, parking, breakfast, pets },
+    };
+    if (address || city || zip || country) {
+      body.location = { address, city, zip, country };
+    }
+
+    const response = await fetch(`${API_BASE_URL}/holidaze/venues`, {
+      method: 'POST',
+      headers: headers(token),
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.errors?.[0]?.message || 'Failed to create venue');
+    }
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error creating venue:', error);
     return null;
   }
 };

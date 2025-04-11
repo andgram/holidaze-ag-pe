@@ -6,6 +6,7 @@ import App from "./pages/App";
 import VenueDetails from "./pages/VenueDetails";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import AddVenue from "./pages/AddVenue";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -19,6 +20,7 @@ root.render(
           <Route path="/venues/:id" element={<VenueDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/add-venue" element={<AddVenue />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

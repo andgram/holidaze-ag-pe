@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { fetchVenueById, deleteVenue, createBooking } from "../api/api";
 import Header from "../components/Header";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
+interface Booking {
+  id: string;
+  dateFrom: string;
+  dateTo: string;
+  guests: number;
+  created: string;
+  updated: string;
+}
 
 interface Venue {
   id: string;
@@ -20,6 +29,8 @@ interface Venue {
     pets: boolean;
   };
   owner: { name: string };
+  bookings?: Booking[];
+  _count?: { bookings: number }; // Added to match API
 }
 
 function VenueDetails() {
@@ -58,15 +69,29 @@ function VenueDetails() {
   };
 
   const handleBooking = async () => {
-    if (
-      !token ||
-      !id ||
-      !dateFrom ||
-      !dateTo ||
-      guests < 1 ||
-      guests > (venue?.maxGuests || 0)
-    ) {
-      setBookingError("Please select valid dates and number of guests");
+    if (!token) {
+      setBookingError("Please log in to make a booking");
+      navigate("/login");
+      return;
+    }
+    if (!id) {
+      setBookingError("Venue ID is missing");
+      return;
+    }
+    if (!dateFrom) {
+      setBookingError("Please select a start date");
+      return;
+    }
+    if (!dateTo) {
+      setBookingError("Please select an end date");
+      return;
+    }
+    if (guests < 1) {
+      setBookingError("Please select at least 1 guest");
+      return;
+    }
+    if (venue?.maxGuests && guests > venue.maxGuests) {
+      setBookingError(`Guests cannot exceed ${venue.maxGuests}`);
       return;
     }
 
@@ -81,7 +106,7 @@ function VenueDetails() {
     if (booking) {
       navigate("/profile");
     } else {
-      setBookingError("Failed to create booking");
+      setBookingError("Failed to create booking - check console for API error");
     }
   };
 
@@ -89,6 +114,13 @@ function VenueDetails() {
   if (!venue) return <div>Venue not found</div>;
 
   const isOwner = user?.name === venue.owner.name;
+
+  // Safely handle bookings
+  const upcomingBookings = (venue.bookings || []).filter((booking) => {
+    const today = new Date();
+    const dateTo = new Date(booking.dateTo);
+    return dateTo >= today;
+  });
 
   return (
     <div>
@@ -118,8 +150,28 @@ function VenueDetails() {
           </button>
           <button onClick={handleDelete}>Delete Venue</button>
           {error && <p>{error}</p>}
+          <h2>Upcoming Bookings for This Venue</h2>
+          <p>Booking count from API: {venue._count?.bookings ?? "Unknown"}</p>
+          {upcomingBookings.length === 0 ? (
+            <p>No upcoming bookings found.</p>
+          ) : (
+            <ul>
+              {upcomingBookings.map((booking) => (
+                <li key={booking.id}>
+                  <p>
+                    From: {new Date(booking.dateFrom).toLocaleDateString()} -
+                    To: {new Date(booking.dateTo).toLocaleDateString()}
+                  </p>
+                  <p>Guests: {booking.guests}</p>
+                  <p>
+                    Booked on: {new Date(booking.created).toLocaleDateString()}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      ) : (
+      ) : token ? (
         <div>
           <h2>Book This Venue</h2>
           <div>
@@ -162,17 +214,27 @@ function VenueDetails() {
                   setGuests(
                     Math.max(
                       1,
-                      Math.min(venue.maxGuests, Number(e.target.value))
+                      Math.min(
+                        venue.maxGuests || Infinity,
+                        Number(e.target.value)
+                      )
                     )
                   )
                 }
                 min="1"
                 max={venue.maxGuests}
+                required
               />
             </label>
           </div>
           <button onClick={handleBooking}>Book Now</button>
           {bookingError && <p>{bookingError}</p>}
+        </div>
+      ) : (
+        <div>
+          <p>
+            Please <Link to="/login">log in</Link> to book this venue.
+          </p>
         </div>
       )}
     </div>

@@ -84,14 +84,14 @@ export const searchVenues = async (query: string) => {
 
 export const fetchVenueById = async (id: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/holidaze/venues/${id}?_owner=true`, {
+    const response = await fetch(`${API_BASE_URL}/holidaze/venues/${id}?_owner=true&_bookings=true`, {
       headers: headers(),
     });
     if (!response.ok) {
       throw new Error(`Failed to fetch venue ${id}`);
     }
     const data = await response.json();
-    console.log('Venue API response:', data.data); // Debug owner field
+    console.log('Full venue API response:', data); // Log full response
     return data.data;
   } catch (error) {
     console.error(`Error fetching venue ${id}:`, error);

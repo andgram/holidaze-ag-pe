@@ -1,14 +1,16 @@
 const API_BASE_URL = 'https://v2.api.noroff.dev';
 const API_AUTH_LOGIN = `${API_BASE_URL}/auth/login`;
-const API_AUTH_REGISTER = `${API_BASE_URL}/auth/register`; // New
-const API_KEY = '2b649e70-e399-47a8-9012-aca6a0c1de0d';
+const API_AUTH_REGISTER = `${API_BASE_URL}/auth/register`;
 
 const headers = (token?: string) => {
-  const headersObj = new Headers();
-  headersObj.append('Content-Type', 'application/json');
-  headersObj.append('X-Noroff-API-Key', API_KEY);
-  if (token) headersObj.append('Authorization', `Bearer ${token}`);
-  return headersObj;
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    'X-Noroff-API-Key': process.env.REACT_APP_API_KEY || '',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
 };
 
 export const registerUser = async (
@@ -74,7 +76,6 @@ export const searchVenues = async (query: string) => {
       throw new Error('Failed to search venues');
     }
     const data = await response.json();
-    console.log('Search API response:', data.data); // Debug
     return data.data;
   } catch (error) {
     console.error('Error searching venues:', error);
@@ -91,7 +92,6 @@ export const fetchVenueById = async (id: string) => {
       throw new Error(`Failed to fetch venue ${id}`);
     }
     const data = await response.json();
-    console.log('Full venue API response:', data); // Log full response
     return data.data;
   } catch (error) {
     console.error(`Error fetching venue ${id}:`, error);
@@ -171,7 +171,6 @@ export const fetchUserBookings = async (token: string, profileName: string) => {
       throw new Error('Failed to fetch bookings');
     }
     const data = await response.json();
-    console.log('Bookings API response (first item):', data.data[0]);
     return data.data.filter((booking: any) => new Date(booking.dateTo) >= new Date());
   } catch (error) {
     console.error('Error fetching bookings:', error);
@@ -188,7 +187,6 @@ export const fetchProfile = async (token: string, profileName: string) => {
       throw new Error('Failed to fetch profile');
     }
     const data = await response.json();
-    console.log('Profile API response:', data.data);
     return data.data;
   } catch (error) {
     console.error('Error fetching profile:', error);
@@ -292,7 +290,6 @@ export const fetchUserVenues = async (token: string, profileName: string) => {
       throw new Error('Failed to fetch user venues');
     }
     const data = await response.json();
-    console.log('User Venues API response (first item):', data.data[0]);
     return data.data;
   } catch (error) {
     console.error('Error fetching user venues:', error);

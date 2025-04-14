@@ -98,90 +98,113 @@ function Profile() {
   }
 
   return (
-    <div>
+    <div className="bg-gray-50 min-h-screen flex flex-col items-center p-6">
       <Header />
-      <h1>Welcome, {profile?.name}</h1>
-      <section>
-        <h2>Profile Info</h2>
-        <p>Email: {profile?.email}</p>
-        <p>Bio: {profile?.bio || "No bio set"}</p>
-        {profile?.avatar?.url && (
-          <img
-            src={profile.avatar.url}
-            alt={profile.avatar.alt}
-            style={{ maxWidth: "100px" }}
-          />
-        )}
-        {profile?.banner?.url && (
-          <img
-            src={profile.banner.url}
-            alt={profile.banner.alt}
-            style={{ maxWidth: "200px" }}
-          />
-        )}
-        <p>Venue Manager: {profile?.venueManager ? "Yes" : "No"}</p>
-        <button onClick={() => setEditMode(!editMode)}>
-          {editMode ? "Cancel" : "Edit Profile"}
-        </button>
+      <div className="max-w-4xl w-full bg-white p-6 rounded-lg shadow-md">
+        <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
+          Welcome, {profile?.name}
+        </h1>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Profile Info</h2>
+          <p className="text-lg">Email: {profile?.email}</p>
+          <p className="text-lg">Bio: {profile?.bio || "No bio set"}</p>
+          {profile?.avatar?.url && (
+            <img
+              src={profile.avatar.url}
+              alt={profile.avatar.alt}
+              className="w-24 h-24 rounded-full object-cover mt-4"
+            />
+          )}
+          {profile?.banner?.url && (
+            <img
+              src={profile.banner.url}
+              alt={profile.banner.alt}
+              className="w-full h-48 object-cover mt-4 rounded-lg"
+            />
+          )}
+          <p className="text-lg mt-2">
+            Venue Manager: {profile?.venueManager ? "Yes" : "No"}
+          </p>
+          <button
+            onClick={() => setEditMode(!editMode)}
+            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            {editMode ? "Cancel" : "Edit Profile"}
+          </button>
+        </section>
+
         {editMode && (
-          <form onSubmit={handleEditSubmit}>
+          <form onSubmit={handleEditSubmit} className="space-y-4">
             <div>
-              <label>
+              <label htmlFor="bio" className="block text-lg font-medium">
                 Bio:
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  rows={3}
-                />
               </label>
+              <textarea
+                id="bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                rows={3}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+              />
             </div>
             <div>
-              <label>
+              <label htmlFor="avatarUrl" className="block text-lg font-medium">
                 Avatar URL:
-                <input
-                  type="url"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  placeholder="https://example.com/avatar.jpg"
-                />
               </label>
+              <input
+                type="url"
+                id="avatarUrl"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                placeholder="https://example.com/avatar.jpg"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+              />
             </div>
             <div>
-              <label>
+              <label htmlFor="bannerUrl" className="block text-lg font-medium">
                 Banner URL:
-                <input
-                  type="url"
-                  value={bannerUrl}
-                  onChange={(e) => setBannerUrl(e.target.value)}
-                  placeholder="https://example.com/banner.jpg"
-                />
               </label>
+              <input
+                type="url"
+                id="bannerUrl"
+                value={bannerUrl}
+                onChange={(e) => setBannerUrl(e.target.value)}
+                placeholder="https://example.com/banner.jpg"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+              />
             </div>
             <div>
-              <label>
+              <label className="block text-lg font-medium">
                 Venue Manager:
-                <input
-                  type="checkbox"
-                  checked={venueManager}
-                  onChange={(e) => setVenueManager(e.target.checked)}
-                />
               </label>
+              <input
+                type="checkbox"
+                checked={venueManager}
+                onChange={(e) => setVenueManager(e.target.checked)}
+                className="h-5 w-5"
+              />
             </div>
-            <button type="submit">Save Changes</button>
-            {error && <p>{error}</p>}
+            <button
+              type="submit"
+              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+            >
+              Save Changes
+            </button>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
           </form>
         )}
-      </section>
+      </div>
 
-      <section>
-        <h2>Your Upcoming Bookings</h2>
+      <section className="max-w-4xl w-full bg-white p-6 mt-8 rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold mb-4">Your Upcoming Bookings</h2>
         {bookings.length === 0 ? (
           <p>No upcoming bookings found.</p>
         ) : (
           <ul>
             {bookings.map((booking) => (
-              <li key={booking.id}>
-                <h3>{booking.venue.name || "Unknown Venue"}</h3>
+              <li key={booking.id} className="mb-4">
+                <h3 className="text-xl font-semibold">{booking.venue.name}</h3>
                 <p>
                   From: {new Date(booking.dateFrom).toLocaleDateString()} - To:{" "}
                   {new Date(booking.dateTo).toLocaleDateString()}
@@ -193,16 +216,19 @@ function Profile() {
         )}
       </section>
 
-      <section>
-        <h2>Your Venues</h2>
+      <section className="max-w-4xl w-full bg-white p-6 mt-8 rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold mb-4">Your Venues</h2>
         {venues.length === 0 ? (
           <p>No venues created yet.</p>
         ) : (
           <ul>
             {venues.map((venue) => (
-              <li key={venue.id}>
-                <Link to={`/venues/${venue.id}`}>
-                  <h3>{venue.name}</h3>
+              <li key={venue.id} className="mb-4">
+                <Link
+                  to={`/venues/${venue.id}`}
+                  className="text-blue-600 hover:text-blue-700"
+                >
+                  <h3 className="text-xl font-semibold">{venue.name}</h3>
                 </Link>
               </li>
             ))}

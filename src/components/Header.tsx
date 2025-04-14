@@ -12,18 +12,47 @@ function Header() {
   };
 
   return (
-    <header>
-      <nav>
-        <Link to="/">Home</Link>
-        {user && token ? (
-          <>
-            <Link to="/profile">Profile</Link>
-            <Link to="/add-venue">Add Venue</Link>
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        ) : (
-          <Link to="/login">Login</Link>
-        )}
+    <header className="bg-gray-800 text-white shadow-lg">
+      <nav className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        {/* Logo or Title */}
+        <div className="text-2xl font-bold">
+          <Link to="/" className="hover:text-gray-400 transition-all">
+            VenueApp
+          </Link>
+        </div>
+
+        {/* Links */}
+        <div className="flex space-x-8">
+          {user && token ? (
+            <>
+              <Link
+                to="/profile"
+                className="px-4 py-2 rounded-lg text-lg hover:bg-gray-700 transition-all"
+              >
+                Profile
+              </Link>
+              <Link
+                to="/add-venue"
+                className="px-4 py-2 rounded-lg text-lg hover:bg-gray-700 transition-all"
+              >
+                Add Venue
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white text-lg hover:bg-red-700 transition-all"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              className="px-4 py-2 rounded-lg text-lg hover:bg-gray-700 transition-all"
+            >
+              Login
+            </Link>
+          )}
+        </div>
       </nav>
     </header>
   );

@@ -13,7 +13,7 @@ function Register() {
   const [bannerUrl, setBannerUrl] = useState("");
   const [bannerAlt, setBannerAlt] = useState("");
   const [venueManager, setVenueManager] = useState(false);
-  const [showOptional, setShowOptional] = useState(false); // New toggle state
+  const [showOptional, setShowOptional] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,126 +83,153 @@ function Register() {
   };
 
   return (
-    <div>
-      <h1>Register</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Username (letters, numbers, underscores only):
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg">
+        <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">
+          Register
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Username (letters, numbers, underscores only):
+            </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </label>
-        </div>
-        <div>
-          <label>
-            Email (must be @stud.noroff.no):
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Email (must be @stud.noroff.no):
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </label>
-        </div>
-        <div>
-          <label>
-            Password (min 8 characters):
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Password (min 8 characters):
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </label>
-        </div>
-        <div>
-          <button type="button" onClick={() => setShowOptional(!showOptional)}>
-            {showOptional ? "Hide Optional Fields" : "Show Optional Fields"}
-          </button>
-        </div>
-        {showOptional && (
-          <>
-            <div>
-              <label>
-                Bio (optional, max 160 characters):
+          </div>
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowOptional(!showOptional)}
+              className="text-blue-500 hover:underline w-full mt-4"
+            >
+              {showOptional ? "Hide Optional Fields" : "Show Optional Fields"}
+            </button>
+          </div>
+          {showOptional && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Bio (optional, max 160 characters):
+                </label>
                 <textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   rows={3}
                   maxLength={160}
+                  className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </label>
-            </div>
-            <div>
-              <label>
-                Avatar URL (optional):
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Avatar URL (optional):
+                </label>
                 <input
                   type="url"
                   value={avatarUrl}
                   onChange={(e) => setAvatarUrl(e.target.value)}
                   placeholder="https://example.com/avatar.jpg"
+                  className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </label>
-            </div>
-            {avatarUrl && (
-              <div>
-                <label>
-                  Avatar Alt Text (optional, max 120 characters):
+              </div>
+              {avatarUrl && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Avatar Alt Text (optional, max 120 characters):
+                  </label>
                   <input
                     type="text"
                     value={avatarAlt}
                     onChange={(e) => setAvatarAlt(e.target.value)}
                     maxLength={120}
+                    className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Banner URL (optional):
                 </label>
-              </div>
-            )}
-            <div>
-              <label>
-                Banner URL (optional):
                 <input
                   type="url"
                   value={bannerUrl}
                   onChange={(e) => setBannerUrl(e.target.value)}
                   placeholder="https://example.com/banner.jpg"
+                  className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </label>
-            </div>
-            {bannerUrl && (
-              <div>
-                <label>
-                  Banner Alt Text (optional, max 120 characters):
+              </div>
+              {bannerUrl && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Banner Alt Text (optional, max 120 characters):
+                  </label>
                   <input
                     type="text"
                     value={bannerAlt}
                     onChange={(e) => setBannerAlt(e.target.value)}
                     maxLength={120}
+                    className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Venue Manager:
                 </label>
-              </div>
-            )}
-            <div>
-              <label>
-                Venue Manager:
                 <input
                   type="checkbox"
                   checked={venueManager}
                   onChange={(e) => setVenueManager(e.target.checked)}
+                  className="mr-2 leading-tight"
                 />
-              </label>
-            </div>
-          </>
-        )}
-        <button type="submit">Register</button>
-        {error && <p>{error}</p>}
-      </form>
-      <p>
-        Already have an account? <Link to="/login">Login here</Link>
-      </p>
+              </div>
+            </>
+          )}
+          <button
+            type="submit"
+            className="w-full p-3 mt-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Register
+          </button>
+          {error && (
+            <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+          )}
+        </form>
+        <p className="text-center mt-4 text-sm text-gray-600">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-500 hover:underline">
+            Login here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

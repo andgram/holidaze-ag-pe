@@ -59,13 +59,16 @@ function AddVenue() {
   };
 
   return (
-    <div>
+    <div className="max-w-4xl mx-auto p-8 bg-white shadow-md rounded-lg">
       <Header />
       <form onSubmit={handleSubmit}>
-        <h2>Add a Venue</h2>
-        <div>
-          <div>
-            <label htmlFor="name">Venue Name</label>
+        <h2 className="text-2xl font-semibold text-center mb-6">Add a Venue</h2>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="flex flex-col">
+            <label htmlFor="name" className="text-lg font-medium mb-2">
+              Venue Name
+            </label>
             <input
               name="name"
               id="name"
@@ -73,10 +76,14 @@ function AddVenue() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
-            <label htmlFor="price">Price</label>
+
+          <div className="flex flex-col">
+            <label htmlFor="price" className="text-lg font-medium mb-2">
+              Price
+            </label>
             <input
               name="price"
               id="price"
@@ -86,24 +93,32 @@ function AddVenue() {
               onChange={(e) => setPrice(e.target.value)}
               min="0"
               required
+              className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
-        <div>
-          <div>
-            <label htmlFor="description">Description</label>
-            <textarea
-              name="description"
-              id="description"
-              placeholder="Description"
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="maxGuests">Maximum Guests</label>
+
+        <div className="flex flex-col mt-6">
+          <label htmlFor="description" className="text-lg font-medium mb-2">
+            Description
+          </label>
+          <textarea
+            name="description"
+            id="description"
+            placeholder="Description"
+            rows={4}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-6">
+          <div className="flex flex-col">
+            <label htmlFor="maxGuests" className="text-lg font-medium mb-2">
+              Maximum Guests
+            </label>
             <input
               name="maxGuests"
               id="maxGuests"
@@ -113,139 +128,177 @@ function AddVenue() {
               onChange={(e) => setMaxGuests(e.target.value)}
               min="1"
               required
+              className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
-        <div>
-          <label>Media</label>
-          <button type="button" onClick={() => setShowMedia(!showMedia)}>
+
+        <div className="mt-6">
+          <label className="text-lg font-medium">Media</label>
+          <button
+            type="button"
+            onClick={() => setShowMedia(!showMedia)}
+            className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+          >
             {showMedia ? "Hide Image" : "Add Image"}
           </button>
+
           {showMedia && (
-            <div>
+            <div className="mt-4">
               <input
                 type="url"
                 value={mediaUrl}
                 onChange={(e) => setMediaUrl(e.target.value)}
                 placeholder="https://example.com/image.jpg"
+                className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="text"
                 value={mediaAlt}
                 onChange={(e) => setMediaAlt(e.target.value)}
                 placeholder="Image description"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           )}
         </div>
-        <div>
-          <p>Facilities</p>
-          <div>
-            <p>
-              If not selected, options will default to "Not
-              included/allowed/available".
-            </p>
-          </div>
-          <div>
+
+        <div className="mt-6">
+          <p className="font-medium text-lg">Facilities</p>
+          <div className="space-y-4 mt-4">
             <div>
-              <label htmlFor="wifi">
+              <label htmlFor="wifi" className="flex items-center">
                 <input
                   type="checkbox"
                   name="wifi"
                   id="wifi"
                   checked={wifi}
                   onChange={(e) => setWifi(e.target.checked)}
+                  className="mr-2"
                 />
-                Wifi <span>(Optional)</span>
+                Wifi <span className="text-sm text-gray-600">(Optional)</span>
               </label>
             </div>
             <div>
-              <label htmlFor="parking">
+              <label htmlFor="parking" className="flex items-center">
                 <input
                   type="checkbox"
                   name="parking"
                   id="parking"
                   checked={parking}
                   onChange={(e) => setParking(e.target.checked)}
+                  className="mr-2"
                 />
-                Parking <span>(Optional)</span>
+                Parking{" "}
+                <span className="text-sm text-gray-600">(Optional)</span>
               </label>
             </div>
             <div>
-              <label htmlFor="breakfast">
+              <label htmlFor="breakfast" className="flex items-center">
                 <input
                   type="checkbox"
                   name="breakfast"
                   id="breakfast"
                   checked={breakfast}
                   onChange={(e) => setBreakfast(e.target.checked)}
+                  className="mr-2"
                 />
-                Breakfast <span>(Optional)</span>
+                Breakfast{" "}
+                <span className="text-sm text-gray-600">(Optional)</span>
               </label>
             </div>
             <div>
-              <label htmlFor="pets">
+              <label htmlFor="pets" className="flex items-center">
                 <input
                   type="checkbox"
                   name="pets"
                   id="pets"
                   checked={pets}
                   onChange={(e) => setPets(e.target.checked)}
+                  className="mr-2"
                 />
-                Pets Allowed <span>(Optional)</span>
+                Pets Allowed{" "}
+                <span className="text-sm text-gray-600">(Optional)</span>
               </label>
             </div>
           </div>
         </div>
-        <div>
-          <button type="button" onClick={() => setShowLocation(!showLocation)}>
+
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={() => setShowLocation(!showLocation)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+          >
             {showLocation
               ? "Hide Additional Information"
               : "Add Additional Information"}
           </button>
+
           {showLocation && (
-            <div>
-              <div>
-                <label htmlFor="address">Address</label>
-                <input
-                  name="address"
-                  id="address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="city">City</label>
-                <input
-                  name="city"
-                  id="city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="zip">Zip</label>
-                <input
-                  name="zip"
-                  id="zip"
-                  value={zip}
-                  onChange={(e) => setZip(e.target.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="country">Country</label>
-                <input
-                  name="country"
-                  id="country"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                />
+            <div className="mt-4">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="flex flex-col">
+                  <label htmlFor="address" className="text-lg font-medium mb-2">
+                    Address
+                  </label>
+                  <input
+                    name="address"
+                    id="address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="city" className="text-lg font-medium mb-2">
+                    City
+                  </label>
+                  <input
+                    name="city"
+                    id="city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="zip" className="text-lg font-medium mb-2">
+                    Zip
+                  </label>
+                  <input
+                    name="zip"
+                    id="zip"
+                    value={zip}
+                    onChange={(e) => setZip(e.target.value)}
+                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="country" className="text-lg font-medium mb-2">
+                    Country
+                  </label>
+                  <input
+                    name="country"
+                    id="country"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
             </div>
           )}
         </div>
-        <button type="submit">Create Venue</button>
-        {error && <p>{error}</p>}
+
+        <button
+          type="submit"
+          className="mt-6 w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600"
+        >
+          Create Venue
+        </button>
+
+        {error && <p className="mt-4 text-red-600 text-center">{error}</p>}
       </form>
     </div>
   );

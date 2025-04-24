@@ -45,12 +45,20 @@ function Header() {
               </button>
             </>
           ) : (
-            <Link
-              to="/login"
-              className="px-4 py-2 rounded-lg text-lg hover:bg-gray-700 transition-all"
-            >
-              Login
-            </Link>
+            <>
+              <Link
+                to="/login"
+                className="px-4 py-2 rounded-lg text-lg hover:bg-gray-700 transition-all"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="px-4 py-2 rounded-lg text-lg hover:bg-gray-700 transition-all"
+              >
+                Register
+              </Link>
+            </>
           )}
         </div>
       </nav>

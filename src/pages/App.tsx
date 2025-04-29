@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchVenues, searchVenues } from "../api/api";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 interface Venue {
   id: string;
@@ -120,6 +121,7 @@ function App() {
           </>
         )}
       </section>
+      <Footer />
     </div>
   );
 }

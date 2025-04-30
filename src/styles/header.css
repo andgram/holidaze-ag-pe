@@ -1,0 +1,4 @@
+header a:hover,
+header button:hover {
+    color: var(--accent-color);
+}

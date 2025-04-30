@@ -12,7 +12,7 @@ function Header() {
   };
 
   return (
-    <header className="bg-gray-800 text-white shadow-lg">
+    <header className="bg-primary text-white shadow-lg">
       <nav className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         {/* Logo or Title */}
         <div className="text-2xl font-bold">
@@ -25,37 +25,25 @@ function Header() {
         <div className="flex space-x-8">
           {user && token ? (
             <>
-              <Link
-                to="/profile"
-                className="px-4 py-2 rounded-lg text-lg hover:bg-gray-700 transition-all"
-              >
+              <Link to="/profile" className="px-4 py-2 rounded-lg text-lg">
                 Profile
               </Link>
-              <Link
-                to="/add-venue"
-                className="px-4 py-2 rounded-lg text-lg hover:bg-gray-700 transition-all"
-              >
+              <Link to="/add-venue" className="px-4 py-2 rounded-lg text-lg">
                 Add Venue
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white text-lg hover:bg-red-700 transition-all"
+                className="px-4 py-2 rounded-lg text-white text-lg"
               >
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="px-4 py-2 rounded-lg text-lg hover:bg-gray-700 transition-all"
-              >
+              <Link to="/login" className="px-4 py-2 rounded-lg text-lg">
                 Login
               </Link>
-              <Link
-                to="/register"
-                className="px-4 py-2 rounded-lg text-lg hover:bg-gray-700 transition-all"
-              >
+              <Link to="/register" className="px-4 py-2 rounded-lg text-lg">
                 Register
               </Link>
             </>

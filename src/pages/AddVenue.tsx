@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { createVenue } from "../api/api";
-import Header from "../components/Header";
 
 function AddVenue() {
   const { token } = useAuth();
@@ -60,7 +59,6 @@ function AddVenue() {
 
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white shadow-md rounded-lg">
-      <Header />
       <form onSubmit={handleSubmit}>
         <h2 className="text-2xl font-semibold text-center mb-6">Add a Venue</h2>
 

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchVenues, searchVenues } from "../api/api";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 interface Venue {
   id: string;
@@ -62,7 +60,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <section className="max-w-6xl mx-auto px-4 py-6">
         <input
           type="text"
@@ -121,7 +118,6 @@ function App() {
           </>
         )}
       </section>
-      <Footer />
     </div>
   );
 }

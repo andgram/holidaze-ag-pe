@@ -99,7 +99,6 @@ function Profile() {
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center p-6">
-      <Header />
       <div className="max-w-4xl w-full bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
           Welcome, {profile?.name}

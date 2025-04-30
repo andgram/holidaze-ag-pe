@@ -124,7 +124,6 @@ function VenueDetails() {
 
   return (
     <div className="bg-gray-100 min-h-screen p-8">
-      <Header />
       <div className="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
         <h1 className="text-3xl font-semibold text-gray-800">{venue.name}</h1>
         <p className="text-gray-600 mt-2">{venue.description}</p>

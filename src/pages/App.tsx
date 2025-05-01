@@ -68,7 +68,7 @@ function App() {
       >
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
         <div className="relative z-10 text-center max-w-6xl mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl text-white mb-6">
+          <h1 className="text-4xl md:text-5xl text-white mb-12 font-semibold">
             Discover Unique Places to Stay
           </h1>
           <div className="flex justify-center max-w-xl mx-auto">
@@ -92,7 +92,7 @@ function App() {
 
       <div className="w-full bg-secondary">
         <section className="max-w-6xl mx-auto px-4 py-6">
-          <h2 className="text-2xl font-bold mb-4 text-text">
+          <h2 className="text-3xl font-semibold my-12 text-text">
             Browse Available Rentals
           </h2>
           {displayedVenues.length === 0 ? (
@@ -103,7 +103,7 @@ function App() {
                 {displayedVenues.map((venue) => (
                   <li
                     key={venue.id}
-                    className="bg-background rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                    className="bg-background transition duration-500 hover:bg-white rounded-xl shadow-md overflow-hidden"
                   >
                     <Link to={`/venues/${venue.id}`}>
                       {venue.media.length > 0 && (
@@ -132,7 +132,7 @@ function App() {
                 <div className="text-center mt-8">
                   <button
                     onClick={loadMore}
-                    className="px-5 py-2 bg-primary text-white font-semibold hover:bg-accenthover transition"
+                    className="px-5 py-2 bg-primary text-white hover:bg-accenthover transition"
                   >
                     Load More
                   </button>

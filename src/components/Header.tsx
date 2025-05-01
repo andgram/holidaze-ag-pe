@@ -17,7 +17,7 @@ function Header() {
         {/* Logo or Title */}
         <div className="text-2xl font-bold">
           <Link to="/" className="hover:text-gray-400 transition-all">
-            VenueApp
+            Holidaze
           </Link>
         </div>
 

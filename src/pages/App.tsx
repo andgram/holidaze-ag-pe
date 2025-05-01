@@ -60,17 +60,37 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <section
+        className="relative w-full h-[400px] bg-cover bg-center flex items-center justify-center"
+        style={{
+          backgroundImage: `url('/hero-bg.jpg')`,
+        }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div className="relative z-10 text-center max-w-6xl mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Discover Unique Places to Stay
+          </h1>
+          <div className="flex justify-center max-w-xl mx-auto">
+            <input
+              type="text"
+              placeholder="Search venues..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-4 border border-gray-300 rounded-l-lg shadow-sm bg-white bg-opacity-90 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              type="button"
+              onClick={() => searchTerm.trim() && searchVenues(searchTerm)}
+              className="px-4 py-4 bg-accent text-text font-semibold rounded-r-lg hover:bg-accenthover transition"
+            >
+              Search
+            </button>
+          </div>
+        </div>
+      </section>
       <section className="max-w-6xl mx-auto px-4 py-6">
-        <input
-          type="text"
-          placeholder="Search venues..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
-        <h1 className="text-2xl font-bold mb-4">All Venues</h1>
-
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">All Venues</h2>
         {displayedVenues.length === 0 ? (
           <p className="text-center text-gray-500">No venues found.</p>
         ) : (
@@ -90,9 +110,9 @@ function App() {
                       />
                     )}
                     <div className="p-4">
-                      <h2 className="text-lg font-semibold mb-1">
+                      <h3 className="text-lg font-semibold mb-1 text-gray-800">
                         {venue.name}
-                      </h2>
+                      </h3>
                       <p className="text-sm text-gray-600 line-clamp-3 mb-2">
                         {venue.description}
                       </p>
@@ -104,7 +124,6 @@ function App() {
                 </li>
               ))}
             </ul>
-
             {hasMore && (
               <div className="text-center mt-8">
                 <button

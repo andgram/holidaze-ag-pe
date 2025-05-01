@@ -23,9 +23,14 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
-        <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
+      style={{
+        backgroundImage: `url('/auth-bg.jpg')`,
+      }}
+    >
+      <div className="bg-primary p-8 rounded-xl shadow-md w-full max-w-sm">
+        <h1 className="text-3xl font-bold text-center text-white mb-6">
           Login
         </h1>
 
@@ -33,7 +38,7 @@ function Login() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-white"
             >
               Email:
             </label>
@@ -43,14 +48,14 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full p-3 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-white"
             >
               Password:
             </label>
@@ -60,7 +65,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full p-3 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
 
@@ -68,15 +73,15 @@ function Login() {
 
           <button
             type="submit"
-            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+            className="w-full py-3 bg-accent text-text font-semibold rounded-lg hover:bg-accenthover transition"
           >
             Login
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm text-white">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:text-blue-700">
+          <Link to="/register" className="text-accent hover:text-accenthover">
             Register here
           </Link>
         </p>

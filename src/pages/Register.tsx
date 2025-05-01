@@ -83,14 +83,20 @@ function Register() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg">
-        <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
+      style={{
+        backgroundImage: `url('/auth-bg.jpg')`,
+      }}
+    >
+      <div className="absolute inset-0"></div>
+      <div className="bg-primary p-8 rounded-xl shadow-md w-full max-w-sm sm:max-w-lg relative z-10">
+        <h1 className="text-3xl font-semibold text-center text-white mb-6">
           Register
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 ">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Username (letters, numbers, underscores only):
             </label>
             <input
@@ -98,11 +104,11 @@ function Register() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 mt-2 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Email (must be @stud.noroff.no):
             </label>
             <input
@@ -110,11 +116,11 @@ function Register() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 mt-2 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Password (min 8 characters):
             </label>
             <input
@@ -122,14 +128,14 @@ function Register() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 mt-2 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
           <div>
             <button
               type="button"
               onClick={() => setShowOptional(!showOptional)}
-              className="text-blue-500 hover:underline w-full mt-4"
+              className="text-accent hover:text-accenthover w-full mt-4"
             >
               {showOptional ? "Hide Optional Fields" : "Show Optional Fields"}
             </button>
@@ -137,7 +143,7 @@ function Register() {
           {showOptional && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-white">
                   Bio (optional, max 160 characters):
                 </label>
                 <textarea
@@ -145,11 +151,11 @@ function Register() {
                   onChange={(e) => setBio(e.target.value)}
                   rows={3}
                   maxLength={160}
-                  className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 mt-2 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-white">
                   Avatar URL (optional):
                 </label>
                 <input
@@ -157,12 +163,12 @@ function Register() {
                   value={avatarUrl}
                   onChange={(e) => setAvatarUrl(e.target.value)}
                   placeholder="https://example.com/avatar.jpg"
-                  className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 mt-2 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
               {avatarUrl && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-white">
                     Avatar Alt Text (optional, max 120 characters):
                   </label>
                   <input
@@ -170,12 +176,12 @@ function Register() {
                     value={avatarAlt}
                     onChange={(e) => setAvatarAlt(e.target.value)}
                     maxLength={120}
-                    className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 mt-2 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-white">
                   Banner URL (optional):
                 </label>
                 <input
@@ -183,12 +189,12 @@ function Register() {
                   value={bannerUrl}
                   onChange={(e) => setBannerUrl(e.target.value)}
                   placeholder="https://example.com/banner.jpg"
-                  className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 mt-2 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
               {bannerUrl && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-white">
                     Banner Alt Text (optional, max 120 characters):
                   </label>
                   <input
@@ -196,26 +202,26 @@ function Register() {
                     value={bannerAlt}
                     onChange={(e) => setBannerAlt(e.target.value)}
                     maxLength={120}
-                    className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 mt-2 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-white">
                   Venue Manager:
                 </label>
                 <input
                   type="checkbox"
                   checked={venueManager}
                   onChange={(e) => setVenueManager(e.target.checked)}
-                  className="mr-2 leading-tight"
+                  className="mr-2 leading-tight accent-accent"
                 />
               </div>
             </>
           )}
           <button
             type="submit"
-            className="w-full p-3 mt-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 mt-4 bg-accent text-text rounded-lg font-semibold hover:bg-accenthover transition focus:outline-none focus:ring-2 focus:ring-accent"
           >
             Register
           </button>
@@ -223,9 +229,9 @@ function Register() {
             <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
           )}
         </form>
-        <p className="text-center mt-4 text-sm text-gray-600">
+        <p className="text-center mt-4 text-sm text-white">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 hover:underline">
+          <Link to="/login" className="text-accent hover:text-accenthover">
             Login here
           </Link>
         </p>

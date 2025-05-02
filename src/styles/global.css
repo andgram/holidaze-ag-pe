@@ -1,6 +1,8 @@
 :root {
     --primary-color: #595F39;
     /* Dark green for backgrounds */
+    --bg-primary-dark: #40462b;
+    /* Darker green for contrast to primary */
     --secondary-color: #C4C5BA;
     /* Neutral gray green for backgrounds */
     --accent-color: #F2B552;

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { fetchVenueById, deleteVenue, createBooking } from "../api/api";
-import Header from "../components/Header";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -30,7 +29,7 @@ interface Venue {
   };
   owner: { name: string };
   bookings?: Booking[];
-  _count?: { bookings: number }; // Added to match API
+  _count?: { bookings: number };
 }
 
 function VenueDetails() {
@@ -44,6 +43,7 @@ function VenueDetails() {
   const [dateTo, setDateTo] = useState<Date | null>(null);
   const [guests, setGuests] = useState<number>(1);
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   useEffect(() => {
     const loadVenue = async () => {
@@ -51,12 +51,24 @@ function VenueDetails() {
         setLoading(false);
         return;
       }
-      const venueData = await fetchVenueById(id);
-      setVenue(venueData);
-      setLoading(false);
+      try {
+        const venueData = await fetchVenueById(id);
+        setVenue(venueData);
+      } catch (err) {
+        console.error("Failed to load venue:", err);
+        setError("Failed to load venue");
+      } finally {
+        setLoading(false);
+      }
     };
     loadVenue();
   }, [id]);
+
+  useEffect(() => {
+    if (venue && guests > venue.maxGuests) {
+      setGuests(venue.maxGuests);
+    }
+  }, [venue, guests]);
 
   const handleDelete = async () => {
     if (!token || !id) return;
@@ -69,6 +81,9 @@ function VenueDetails() {
   };
 
   const handleBooking = async () => {
+    if (bookingLoading) return;
+    setBookingError(null);
+
     if (!token) {
       setBookingError("Please log in to make a booking");
       navigate("/login");
@@ -95,6 +110,18 @@ function VenueDetails() {
       return;
     }
 
+    const isOverlapping = (venue?.bookings || []).some((booking) => {
+      const existingFrom = new Date(booking.dateFrom);
+      const existingTo = new Date(booking.dateTo);
+      return dateFrom <= existingTo && dateTo >= existingFrom;
+    });
+
+    if (isOverlapping) {
+      setBookingError("Selected dates overlap with an existing booking.");
+      return;
+    }
+
+    setBookingLoading(true);
     const booking = await createBooking(
       token,
       dateFrom.toISOString(),
@@ -102,8 +129,10 @@ function VenueDetails() {
       guests,
       id
     );
+    setBookingLoading(false);
 
     if (booking) {
+      alert("Booking successful!");
       navigate("/profile");
     } else {
       setBookingError("Failed to create booking - check console for API error");
@@ -111,20 +140,32 @@ function VenueDetails() {
   };
 
   if (loading) return <div className="text-center p-4">Loading venue...</div>;
+  if (error) return <div className="text-center p-4 text-red-500">{error}</div>;
   if (!venue) return <div className="text-center p-4">Venue not found</div>;
 
   const isOwner = user?.name === venue.owner.name;
 
-  // Safely handle bookings
   const upcomingBookings = (venue.bookings || []).filter((booking) => {
     const today = new Date();
     const dateTo = new Date(booking.dateTo);
     return dateTo >= today;
   });
 
+  const bookedDateIntervals = (venue.bookings || []).map((booking) => ({
+    start: new Date(booking.dateFrom),
+    end: new Date(booking.dateTo),
+  }));
+
   return (
     <div className="bg-background min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
+        <Link
+          to="/venues"
+          className="text-accent hover:text-accenthover underline mb-4 inline-block"
+        >
+          ← Back to all venues
+        </Link>
+
         {venue.media.length > 0 && (
           <div className="relative h-64 mb-6">
             <img
@@ -206,15 +247,25 @@ function VenueDetails() {
                       <li key={booking.id} className="border-b pb-4">
                         <p className="text-background">
                           From:{" "}
-                          {new Date(booking.dateFrom).toLocaleDateString()} -
-                          To: {new Date(booking.dateTo).toLocaleDateString()}
+                          {new Date(booking.dateFrom).toLocaleDateString(
+                            "en-US",
+                            { year: "numeric", month: "short", day: "numeric" }
+                          )}{" "}
+                          - To:{" "}
+                          {new Date(booking.dateTo).toLocaleDateString(
+                            "en-US",
+                            { year: "numeric", month: "short", day: "numeric" }
+                          )}
                         </p>
                         <p className="text-background">
                           Guests: {booking.guests}
                         </p>
                         <p className="text-background">
                           Booked on:{" "}
-                          {new Date(booking.created).toLocaleDateString()}
+                          {new Date(booking.created).toLocaleDateString(
+                            "en-US",
+                            { year: "numeric", month: "short", day: "numeric" }
+                          )}
                         </p>
                       </li>
                     ))}
@@ -239,6 +290,7 @@ function VenueDetails() {
                     minDate={new Date()}
                     dateFormat="yyyy-MM-dd"
                     placeholderText="Select start date"
+                    excludeDateIntervals={bookedDateIntervals}
                     className="w-full mt-2 p-3 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
@@ -255,6 +307,7 @@ function VenueDetails() {
                     minDate={dateFrom || new Date()}
                     dateFormat="yyyy-MM-dd"
                     placeholderText="Select end date"
+                    excludeDateIntervals={bookedDateIntervals}
                     className="w-full mt-2 p-3 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
@@ -284,9 +337,14 @@ function VenueDetails() {
                 </div>
                 <button
                   onClick={handleBooking}
-                  className="w-full mt-6 py-3 bg-accent text-text rounded-lg font-semibold hover:bg-accenthover transition focus:outline-none focus:ring-2 focus:ring-accent"
+                  disabled={bookingLoading}
+                  className={`w-full mt-6 py-3 bg-accent text-text rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-accent ${
+                    bookingLoading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-accenthover"
+                  }`}
                 >
-                  Book Now
+                  {bookingLoading ? "Booking..." : "Book Now"}
                 </button>
                 {bookingError && (
                   <p className="text-red-500 mt-4 text-center">

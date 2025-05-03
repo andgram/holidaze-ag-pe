@@ -51,7 +51,6 @@ export const registerUser = async (
   }
 };
 
-
 export const fetchVenues = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/holidaze/venues`, {
@@ -297,8 +296,6 @@ export const fetchUserVenues = async (token: string, profileName: string) => {
     return [];
   }
 };
-
-
 
 export const deleteVenue = async (token: string, venueId: string) => {
   try {

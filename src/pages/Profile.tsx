@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   fetchUserBookings,
@@ -7,7 +7,6 @@ import {
   updateProfile,
   fetchUserVenues,
 } from "../api/api";
-import Header from "../components/Header";
 
 interface Booking {
   id: string;
@@ -37,6 +36,10 @@ interface Venue {
 function Profile() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const message = location.state?.message;
+  const [visibleMessage, setVisibleMessage] = useState(message);
+
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -72,6 +75,13 @@ function Profile() {
     loadData();
   }, [token, user, navigate]);
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setVisibleMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -99,6 +109,12 @@ function Profile() {
 
   return (
     <div className="bg-white min-h-screen flex flex-col items-center p-6">
+      {visibleMessage && (
+        <div className="bg-yellow-100 text-yellow-800 p-4 rounded mb-4 w-full max-w-4xl">
+          {visibleMessage}
+        </div>
+      )}
+
       <div className="max-w-4xl w-full bg-background p-6 rounded-xl">
         {profile?.banner?.url && (
           <div className="relative w-full h-48">

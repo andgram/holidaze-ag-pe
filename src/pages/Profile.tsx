@@ -51,6 +51,13 @@ function Profile() {
   const [venueManager, setVenueManager] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const defaultAvatar = "/placeholder-avatar.jpg";
+  const defaultBanner = "/placeholder-banner.jpg";
+  const defaultApiAvatarUrl =
+    "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&h=400&w=400";
+  const defaultApiBannerUrl =
+    "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&h=500&w=1500";
+
   useEffect(() => {
     if (!token || !user?.name) {
       navigate("/login");
@@ -67,8 +74,16 @@ function Profile() {
       setProfile(profileData);
       setVenues(venueData);
       setBio(profileData?.bio || "");
-      setAvatarUrl(profileData?.avatar?.url || "");
-      setBannerUrl(profileData?.banner?.url || "");
+      setAvatarUrl(
+        profileData?.avatar?.url === defaultApiAvatarUrl
+          ? defaultAvatar
+          : profileData?.avatar?.url || ""
+      );
+      setBannerUrl(
+        profileData?.banner?.url === defaultApiBannerUrl
+          ? defaultBanner
+          : profileData?.banner?.url || ""
+      );
       setVenueManager(profileData?.venueManager || false);
       setLoading(false);
     };
@@ -116,22 +131,18 @@ function Profile() {
       )}
 
       <div className="max-w-4xl w-full bg-background p-6 rounded-xl">
-        {profile?.banner?.url && (
-          <div className="relative w-full h-48">
-            <img
-              src={profile.banner.url}
-              alt={profile.banner.alt}
-              className="w-full h-48 object-cover rounded-xl"
-            />
-            {profile?.avatar?.url && (
-              <img
-                src={profile.avatar.url}
-                alt={profile.avatar.alt}
-                className="absolute bottom-[-2rem] left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full object-cover"
-              />
-            )}
-          </div>
-        )}
+        <div className="relative w-full h-48">
+          <img
+            src={bannerUrl || defaultBanner}
+            alt={profile?.banner?.alt || "Profile banner"}
+            className="w-full h-48 object-cover rounded-xl"
+          />
+          <img
+            src={avatarUrl || defaultAvatar}
+            alt={profile?.avatar?.alt || "User avatar"}
+            className="absolute bottom-[-2rem] left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full object-cover"
+          />
+        </div>
         <h1 className="text-3xl font-bold text-center text-primary mt-12 mb-6">
           Welcome, {profile?.name}
         </h1>

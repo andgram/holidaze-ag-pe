@@ -37,19 +37,20 @@ export const registerUser = async (
       body: JSON.stringify(body),
     });
 
+    const result = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      const errorMessage = errorData.errors?.[0]?.message || 'Registration failed';
-      throw new Error(errorMessage);
+      const errorMessage = result.errors?.[0]?.message || 'Registration failed';
+      return { success: false, error: errorMessage };
     }
 
-    const data = await response.json();
-    return data.data; // Returns the created user profile
-  } catch (error) {
+    return { success: true, data: result.data };
+  } catch (error: any) {
     console.error('Error registering user:', error);
-    return null;
+    return { success: false, error: error.message || 'Unexpected error occurred' };
   }
 };
+
 
 export const fetchVenues = async () => {
   try {

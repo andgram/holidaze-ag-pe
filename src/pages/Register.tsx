@@ -54,7 +54,7 @@ function Register() {
       return;
     }
 
-    const user = await registerUser(
+    const result = await registerUser(
       name,
       email,
       password,
@@ -66,10 +66,10 @@ function Register() {
       venueManager
     );
 
-    if (user) {
+    if (result?.success) {
       navigate("/login");
     } else {
-      setError("Failed to register user");
+      setError(result?.error || "Failed to register user");
     }
   };
 

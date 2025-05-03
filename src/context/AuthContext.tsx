@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ) => {
     setToken(newToken);
     setUser(newUser);
-    localStorage.setItem("token", newToken); // Persist token
+    localStorage.setItem("token", newToken);
     localStorage.setItem("user", JSON.stringify(newUser));
   };
 

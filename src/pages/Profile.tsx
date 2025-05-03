@@ -75,14 +75,18 @@ function Profile() {
       setVenues(venueData);
       setBio(profileData?.bio || "");
       setAvatarUrl(
-        profileData?.avatar?.url === defaultApiAvatarUrl
-          ? defaultAvatar
-          : profileData?.avatar?.url || ""
+        profileData?.avatar?.url &&
+          profileData.avatar.url !== defaultApiAvatarUrl &&
+          profileData.avatar.url !== defaultAvatar
+          ? profileData.avatar.url
+          : ""
       );
       setBannerUrl(
-        profileData?.banner?.url === defaultApiBannerUrl
-          ? defaultBanner
-          : profileData?.banner?.url || ""
+        profileData?.banner?.url &&
+          profileData.banner.url !== defaultApiBannerUrl &&
+          profileData.banner.url !== defaultBanner
+          ? profileData.banner.url
+          : ""
       );
       setVenueManager(profileData?.venueManager || false);
       setLoading(false);
@@ -100,21 +104,26 @@ function Profile() {
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const updatedProfile = await updateProfile(
-      token!,
-      user!.name,
-      bio || undefined,
-      avatarUrl || undefined,
-      "User avatar",
-      bannerUrl || undefined,
-      "Profile banner",
-      venueManager
-    );
-    if (updatedProfile) {
-      setProfile(updatedProfile);
-      setEditMode(false);
-    } else {
-      setError("Failed to update profile");
+
+    try {
+      const updatedProfile = await updateProfile(
+        token!,
+        user!.name,
+        bio !== profile?.bio ? bio : undefined,
+        avatarUrl && avatarUrl !== profile?.avatar?.url ? avatarUrl : undefined,
+        "User avatar",
+        bannerUrl && bannerUrl !== profile?.banner?.url ? bannerUrl : undefined,
+        "Profile banner",
+        venueManager !== profile?.venueManager ? venueManager : undefined
+      );
+      if (updatedProfile) {
+        setProfile(updatedProfile);
+        setEditMode(false);
+      } else {
+        setError("Failed to update profile");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update profile");
     }
   };
 
@@ -149,7 +158,7 @@ function Profile() {
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-text">
-            Profile Info
+            Profile Profile Info
           </h2>
           <p className="text-lg text-text">Email: {profile?.email}</p>
           <p className="text-lg text-text">
@@ -173,7 +182,7 @@ function Profile() {
                 htmlFor="bio"
                 className="block text-lg font-medium text-text"
               >
-                Bio:
+                Bio (optional):
               </label>
               <textarea
                 id="bio"
@@ -188,7 +197,7 @@ function Profile() {
                 htmlFor="avatarUrl"
                 className="block text-lg font-medium text-text"
               >
-                Avatar URL:
+                Avatar URL (optional):
               </label>
               <input
                 type="url"
@@ -204,7 +213,7 @@ function Profile() {
                 htmlFor="bannerUrl"
                 className="block text-lg font-medium text-text"
               >
-                Banner URL:
+                Banner URL (optional):
               </label>
               <input
                 type="url"

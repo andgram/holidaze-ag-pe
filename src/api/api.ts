@@ -51,6 +51,7 @@ export const registerUser = async (
   }
 };
 
+
 export const fetchVenues = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/holidaze/venues`, {
@@ -152,7 +153,7 @@ export const createBooking = async (
     }
 
     const data = await response.json();
-    return data.data; // Returns the created booking
+    return data.data;
   } catch (error) {
     console.error('Error creating booking:', error);
     return null;
@@ -206,13 +207,17 @@ export const updateProfile = async (
 ) => {
   try {
     const body: any = {};
-    if (bio !== undefined) body.bio = bio;
-    if (avatarUrl) body.avatar = { url: avatarUrl, alt: avatarAlt || 'User avatar' };
-    if (bannerUrl) body.banner = { url: bannerUrl, alt: bannerAlt || 'Profile banner' };
+    if (bio !== undefined && bio !== null) body.bio = bio;
+    if (avatarUrl !== undefined && avatarUrl !== null && avatarUrl !== '') {
+      body.avatar = { url: avatarUrl, alt: avatarAlt || 'User avatar' };
+    }
+    if (bannerUrl !== undefined && bannerUrl !== null && bannerUrl !== '') {
+      body.banner = { url: bannerUrl, alt: bannerAlt || 'Profile banner' };
+    }
     if (venueManager !== undefined) body.venueManager = venueManager;
 
     if (Object.keys(body).length === 0) {
-      throw new Error('At least one field must be provided to update');
+      return null;
     }
 
     const response = await fetch(`${API_BASE_URL}/holidaze/profiles/${profileName}`, {
@@ -228,10 +233,9 @@ export const updateProfile = async (
     return data.data;
   } catch (error) {
     console.error('Error updating profile:', error);
-    return null;
+    throw error;
   }
 };
-
 export const createVenue = async (
   token: string,
   name: string,
@@ -296,6 +300,8 @@ export const fetchUserVenues = async (token: string, profileName: string) => {
     return [];
   }
 };
+
+
 
 export const deleteVenue = async (token: string, venueId: string) => {
   try {

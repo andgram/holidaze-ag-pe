@@ -41,7 +41,7 @@ function AddVenue() {
             },
           });
         } else {
-          setLoading(false); // allow access
+          setLoading(false);
         }
       } catch (err) {
         console.error("Failed to fetch profile:", err);

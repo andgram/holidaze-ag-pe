@@ -30,6 +30,15 @@ interface Venue {
   owner: { name: string };
   bookings?: Booking[];
   _count?: { bookings: number };
+  location: {
+    address: string | null;
+    city: string | null;
+    zip: string | null;
+    country: string | null;
+    continent: string | null;
+    lat: number | null;
+    lng: number | null;
+  };
 }
 
 function VenueDetails() {
@@ -45,6 +54,7 @@ function VenueDetails() {
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState<string | null>(null);
+  const [showAddress, setShowAddress] = useState(false);
 
   useEffect(() => {
     const loadVenue = async () => {
@@ -143,22 +153,36 @@ function VenueDetails() {
     }
   };
 
+  // Helper function to check if the date is booked
+  const isDateBooked = (date: Date) => {
+    return venue?.bookings?.some((booking) => {
+      const existingFrom = new Date(booking.dateFrom);
+      const existingTo = new Date(booking.dateTo);
+      return date >= existingFrom && date <= existingTo;
+    });
+  };
+
+  const getBookedDates = () => {
+    return (venue?.bookings || []).flatMap((booking) => {
+      const startDate = new Date(booking.dateFrom);
+      const endDate = new Date(booking.dateTo);
+      const dates = [];
+      let currentDate = startDate;
+      while (currentDate <= endDate) {
+        dates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      return dates;
+    });
+  };
+
+  const bookedDates = getBookedDates();
+
   if (loading) return <div className="text-center p-4">Loading venue...</div>;
   if (error) return <div className="text-center p-4 text-red-500">{error}</div>;
   if (!venue) return <div className="text-center p-4">Venue not found</div>;
 
   const isOwner = user?.name === venue.owner.name;
-
-  const upcomingBookings = (venue.bookings || []).filter((booking) => {
-    const today = new Date();
-    const dateTo = new Date(booking.dateTo);
-    return dateTo >= today;
-  });
-
-  const bookedDateIntervals = (venue.bookings || []).map((booking) => ({
-    start: new Date(booking.dateFrom),
-    end: new Date(booking.dateTo),
-  }));
 
   return (
     <div className="bg-background min-h-screen p-8">
@@ -200,6 +224,7 @@ function VenueDetails() {
             </h2>
             <p className="text-text">{venue.description}</p>
             <p className="text-text mt-4">Max Guests: {venue.maxGuests}</p>
+
             <h2 className="text-2xl font-semibold text-text mt-6 mb-4">
               Facilities
             </h2>
@@ -217,148 +242,88 @@ function VenueDetails() {
                 Pets: {venue.meta.pets ? "Yes" : "No"}
               </li>
             </ul>
+
+            <h2 className="text-2xl font-semibold text-text mt-6 mb-4">
+              Address
+            </h2>
+            <button
+              onClick={() => setShowAddress(!showAddress)}
+              className="text-primary hover:text-accenthover underline mb-2"
+            >
+              {showAddress ? "Show less" : "Show more"}
+            </button>
+
+            {showAddress && (
+              <ul className="space-y-2">
+                <li className="text-text">
+                  Address: {venue.location.address || "N/A"}
+                </li>
+                <li className="text-text">
+                  City: {venue.location.city || "N/A"}
+                </li>
+                <li className="text-text">
+                  Zip: {venue.location.zip || "N/A"}
+                </li>
+                <li className="text-text">
+                  Country: {venue.location.country || "N/A"}
+                </li>
+                <li className="text-text">
+                  Continent: {venue.location.continent || "N/A"}
+                </li>
+              </ul>
+            )}
           </div>
 
           <div className="bg-primary p-6 rounded-xl shadow-md">
             {isOwner && token ? (
-              <div>
-                <h2 className="text-2xl font-semibold text-white mb-4">
-                  Manage Venue
-                </h2>
-                <button
-                  onClick={() => navigate(`/edit-venue/${venue.id}`)}
-                  className="w-full py-3 bg-accent text-text rounded-lg font-semibold hover:bg-accenthover transition focus:outline-none focus:ring-2 focus:ring-accent"
-                >
-                  Edit Venue
-                </button>
+              <div className="space-y-4">
                 <button
                   onClick={handleDelete}
-                  className="w-full mt-4 py-3 bg-text text-white rounded-lg font-semibold hover:bg-black transition focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
                 >
                   Delete Venue
                 </button>
-                {error && (
-                  <p className="text-red-500 mt-4 text-center">{error}</p>
-                )}
-                <h2 className="mt-6 mb-6 text-2xl font-semibold text-white">
-                  Upcoming Bookings
-                </h2>
-                <p className="text-background">
-                  Booking count: {venue._count?.bookings ?? "Unknown"}
-                </p>
-                {upcomingBookings.length === 0 ? (
-                  <p className="text-background mt-4">
-                    No upcoming bookings found.
-                  </p>
-                ) : (
-                  <ul className="mt-4 space-y-4">
-                    {upcomingBookings.map((booking) => (
-                      <li key={booking.id} className="border-b pb-4">
-                        <p className="text-background">
-                          From:{" "}
-                          {new Date(booking.dateFrom).toLocaleDateString(
-                            "en-US",
-                            { year: "numeric", month: "short", day: "numeric" }
-                          )}{" "}
-                          - To:{" "}
-                          {new Date(booking.dateTo).toLocaleDateString(
-                            "en-US",
-                            { year: "numeric", month: "short", day: "numeric" }
-                          )}
-                        </p>
-                        <p className="text-background">
-                          Guests: {booking.guests}
-                        </p>
-                        <p className="text-background">
-                          Booked on:{" "}
-                          {new Date(booking.created).toLocaleDateString(
-                            "en-US",
-                            { year: "numeric", month: "short", day: "numeric" }
-                          )}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
             ) : token ? (
-              <div>
-                <h2 className="text-2xl font-semibold text-white mb-4">
-                  Book This Venue
-                </h2>
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-white">
-                    Start Date
-                  </label>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-white block mb-1">From</label>
                   <DatePicker
                     selected={dateFrom}
-                    onChange={(date: Date | null) => setDateFrom(date)}
-                    selectsStart
-                    startDate={dateFrom}
-                    endDate={dateTo}
-                    minDate={new Date()}
-                    dateFormat="yyyy-MM-dd"
-                    placeholderText="Select start date"
-                    excludeDateIntervals={bookedDateIntervals}
-                    className="w-full mt-2 p-3 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    onChange={(date) => setDateFrom(date)}
+                    className="w-full p-2 rounded"
+                    filterDate={(date) => !isDateBooked(date)}
                   />
                 </div>
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-white">
-                    End Date
-                  </label>
+                <div>
+                  <label className="text-white block mb-1">To</label>
                   <DatePicker
                     selected={dateTo}
-                    onChange={(date: Date | null) => setDateTo(date)}
-                    selectsEnd
-                    startDate={dateFrom}
-                    endDate={dateTo}
-                    minDate={dateFrom || new Date()}
-                    dateFormat="yyyy-MM-dd"
-                    placeholderText="Select end date"
-                    excludeDateIntervals={bookedDateIntervals}
-                    className="w-full mt-2 p-3 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    onChange={(date) => setDateTo(date)}
+                    className="w-full p-2 rounded"
+                    filterDate={(date) => !isDateBooked(date)}
                   />
                 </div>
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-white">
-                    Number of Guests (max {venue.maxGuests})
-                  </label>
+                <div>
+                  <label className="text-white block mb-1">Guests</label>
                   <input
                     type="number"
-                    value={guests}
-                    onChange={(e) =>
-                      setGuests(
-                        Math.max(
-                          1,
-                          Math.min(
-                            venue.maxGuests || Infinity,
-                            Number(e.target.value)
-                          )
-                        )
-                      )
-                    }
-                    min="1"
+                    min={1}
                     max={venue.maxGuests}
-                    required
-                    className="w-full mt-2 p-3 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    value={guests}
+                    onChange={(e) => setGuests(parseInt(e.target.value))}
+                    className="w-full p-2 rounded"
                   />
                 </div>
                 <button
                   onClick={handleBooking}
                   disabled={bookingLoading}
-                  className={`w-full mt-6 py-3 bg-accent text-text rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-accent ${
-                    bookingLoading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-accenthover"
-                  }`}
+                  className="bg-accent hover:bg-accenthover text-white py-2 px-4 rounded w-full"
                 >
                   {bookingLoading ? "Booking..." : "Book Now"}
                 </button>
                 {bookingError && (
-                  <p className="text-red-500 mt-4 text-center">
-                    {bookingError}
-                  </p>
+                  <div className="text-red-500 text-sm">{bookingError}</div>
                 )}
               </div>
             ) : (

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { fetchVenueById, editVenue } from "../api/api";
-import Header from "../components/Header";
 
 function EditVenue() {
   const { id } = useParams<{ id: string }>();
@@ -18,8 +17,6 @@ function EditVenue() {
   const [pets, setPets] = useState(false);
   const [mediaUrl, setMediaUrl] = useState("");
   const [mediaAlt, setMediaAlt] = useState("");
-  const [showMedia, setShowMedia] = useState(false);
-  const [showLocation, setShowLocation] = useState(false);
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [zip, setZip] = useState("");
@@ -74,10 +71,10 @@ function EditVenue() {
       parking,
       breakfast,
       pets,
-      showLocation && address ? address : undefined,
-      showLocation && city ? city : undefined,
-      showLocation && zip ? zip : undefined,
-      showLocation && country ? country : undefined
+      address ? address : undefined,
+      city ? city : undefined,
+      zip ? zip : undefined,
+      country ? country : undefined
     );
 
     if (venue) {
@@ -185,32 +182,22 @@ function EditVenue() {
 
           <div className="mt-6">
             <label className="text-lg font-medium text-text">Media</label>
-            <button
-              type="button"
-              onClick={() => setShowMedia(!showMedia)}
-              className="mt-2 bg-primary text-white px-4 py-1 ml-2 rounded-xl hover:bg-accenthover transition"
-            >
-              {showMedia ? "Hide Image" : "Add Image"}
-            </button>
-
-            {showMedia && (
-              <div className="mt-4">
-                <input
-                  type="url"
-                  value={mediaUrl}
-                  onChange={(e) => setMediaUrl(e.target.value)}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full p-3 border border-secondary rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent mb-4"
-                />
-                <input
-                  type="text"
-                  value={mediaAlt}
-                  onChange={(e) => setMediaAlt(e.target.value)}
-                  placeholder="Image description"
-                  className="w-full p-3 border border-secondary rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-              </div>
-            )}
+            <div className="mt-4">
+              <input
+                type="url"
+                value={mediaUrl}
+                onChange={(e) => setMediaUrl(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+                className="w-full p-3 border border-secondary rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent mb-4"
+              />
+              <input
+                type="text"
+                value={mediaAlt}
+                onChange={(e) => setMediaAlt(e.target.value)}
+                placeholder="Image description"
+                className="w-full p-3 border border-secondary rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+            </div>
           </div>
 
           <div className="mt-6">
@@ -289,89 +276,12 @@ function EditVenue() {
 
           <div className="mt-6">
             <button
-              type="button"
-              onClick={() => setShowLocation(!showLocation)}
-              className="bg-primary text-white px-4 py-1 rounded-xl hover:bg-accenthover transition"
+              type="submit"
+              className="mt-6 w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-accenthover transition"
             >
-              {showLocation
-                ? "Hide Additional Information"
-                : "Add Additional Information"}
+              Update Venue
             </button>
-
-            {showLocation && (
-              <div className="mt-4">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <div className="flex flex-col">
-                    <label
-                      htmlFor="address"
-                      className="text-lg font-medium text-text mb-2"
-                    >
-                      Address
-                    </label>
-                    <input
-                      name="address"
-                      id="address"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      className="border border-secondary p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label
-                      htmlFor="city"
-                      className="text-lg font-medium text-text mb-2"
-                    >
-                      City
-                    </label>
-                    <input
-                      name="city"
-                      id="city"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="border border-secondary p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label
-                      htmlFor="zip"
-                      className="text-lg font-medium text-text mb-2"
-                    >
-                      Zip
-                    </label>
-                    <input
-                      name="zip"
-                      id="zip"
-                      value={zip}
-                      onChange={(e) => setZip(e.target.value)}
-                      className="border border-secondary p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label
-                      htmlFor="country"
-                      className="text-lg font-medium text-text mb-2"
-                    >
-                      Country
-                    </label>
-                    <input
-                      name="country"
-                      id="country"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      className="border border-secondary p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
-
-          <button
-            type="submit"
-            className="mt-6 w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-accenthover transition"
-          >
-            Update Venue
-          </button>
 
           {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
         </form>

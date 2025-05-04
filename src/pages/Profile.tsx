@@ -10,10 +10,7 @@ import {
 
 interface Booking {
   id: string;
-  venue: {
-    id: string;
-    name: string;
-  };
+  venue: { id: string; name: string };
   dateFrom: string;
   dateTo: string;
   guests: number;
@@ -53,10 +50,6 @@ function Profile() {
 
   const defaultAvatar = "/placeholder-avatar.jpg";
   const defaultBanner = "/placeholder-banner.jpg";
-  const defaultApiAvatarUrl =
-    "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&h=400&w=400";
-  const defaultApiBannerUrl =
-    "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&h=500&w=1500";
 
   useEffect(() => {
     if (!token || !user?.name) {
@@ -74,20 +67,8 @@ function Profile() {
       setProfile(profileData);
       setVenues(venueData);
       setBio(profileData?.bio || "");
-      setAvatarUrl(
-        profileData?.avatar?.url &&
-          profileData.avatar.url !== defaultApiAvatarUrl &&
-          profileData.avatar.url !== defaultAvatar
-          ? profileData.avatar.url
-          : ""
-      );
-      setBannerUrl(
-        profileData?.banner?.url &&
-          profileData.banner.url !== defaultApiBannerUrl &&
-          profileData.banner.url !== defaultBanner
-          ? profileData.banner.url
-          : ""
-      );
+      setAvatarUrl(profileData?.avatar?.url || "");
+      setBannerUrl(profileData?.banner?.url || "");
       setVenueManager(profileData?.venueManager || false);
       setLoading(false);
     };
@@ -111,10 +92,12 @@ function Profile() {
         user!.name,
         bio !== profile?.bio ? bio : undefined,
         avatarUrl && avatarUrl !== profile?.avatar?.url ? avatarUrl : undefined,
-        "User avatar",
         bannerUrl && bannerUrl !== profile?.banner?.url ? bannerUrl : undefined,
-        "Profile banner",
-        venueManager !== profile?.venueManager ? venueManager : undefined
+        venueManager !== profile?.venueManager
+          ? venueManager
+            ? "true"
+            : "false"
+          : undefined
       );
       if (updatedProfile) {
         setProfile(updatedProfile);
@@ -158,7 +141,7 @@ function Profile() {
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-text">
-            Profile Profile Info
+            Profile Info
           </h2>
           <p className="text-lg text-text">Email: {profile?.email}</p>
           <p className="text-lg text-text">
@@ -279,7 +262,7 @@ function Profile() {
             <ul>
               {venues.map((venue) => (
                 <li key={venue.id} className="mb-4">
-                  <Link to={`/venues/${venue.id}`} className="text-accentr">
+                  <Link to={`/venues/${venue.id}`} className="text-accent">
                     <h3 className="text-xl text-text underline hover:text-accenthover">
                       {venue.name}
                     </h3>

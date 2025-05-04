@@ -15,42 +15,53 @@ function Register() {
   const [venueManager, setVenueManager] = useState(false);
   const [showOptional, setShowOptional] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false); // Loading state
+  const [passwordVisible, setPasswordVisible] = useState(false); // Password visibility toggle
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true); // Set loading state to true when submitting
 
     // Basic validation
     if (!name.match(/^[a-zA-Z0-9_]+$/)) {
       setError("Name must contain only letters, numbers, or underscores");
+      setLoading(false);
       return;
     }
     if (!email.endsWith("@stud.noroff.no")) {
       setError("Email must be a valid stud.noroff.no address");
+      setLoading(false);
       return;
     }
     if (password.length < 8) {
       setError("Password must be at least 8 characters");
+      setLoading(false);
       return;
     }
     if (bio && bio.length > 160) {
       setError("Bio must be less than 160 characters");
+      setLoading(false);
       return;
     }
     if (avatarUrl && !isValidUrl(avatarUrl)) {
       setError("Avatar URL must be a valid URL");
+      setLoading(false);
       return;
     }
     if (avatarAlt && avatarAlt.length > 120) {
       setError("Avatar alt text must be less than 120 characters");
+      setLoading(false);
       return;
     }
     if (bannerUrl && !isValidUrl(bannerUrl)) {
       setError("Banner URL must be a valid URL");
+      setLoading(false);
       return;
     }
     if (bannerAlt && bannerAlt.length > 120) {
       setError("Banner alt text must be less than 120 characters");
+      setLoading(false);
       return;
     }
 
@@ -65,6 +76,8 @@ function Register() {
       bannerAlt || undefined,
       venueManager
     );
+
+    setLoading(false); // Set loading state to false after the request
 
     if (result?.success) {
       navigate("/login");
@@ -123,14 +136,25 @@ function Register() {
             <label className="block text-sm font-medium text-white">
               Password (min 8 characters):
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full p-3 mt-2 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
-            />
+            <div className="relative">
+              <input
+                type={passwordVisible ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full p-3 mt-2 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+              <button
+                type="button"
+                onClick={() => setPasswordVisible(!passwordVisible)}
+                className="absolute top-5 right-3 text-white"
+                aria-label={passwordVisible ? "Hide password" : "Show password"}
+              >
+                {passwordVisible ? "👁️" : "🙈"}
+              </button>
+            </div>
           </div>
+
           <div>
             <button
               type="button"
@@ -140,6 +164,7 @@ function Register() {
               {showOptional ? "Hide Optional Fields" : "Show Optional Fields"}
             </button>
           </div>
+
           {showOptional && (
             <>
               <div>
@@ -219,12 +244,15 @@ function Register() {
               </div>
             </>
           )}
+
           <button
             type="submit"
+            disabled={loading}
             className="w-full p-3 mt-4 bg-accent text-text rounded-lg font-semibold hover:bg-accenthover transition focus:outline-none focus:ring-2 focus:ring-accent"
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </button>
+
           {error && (
             <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
           )}

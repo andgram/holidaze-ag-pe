@@ -31,25 +31,20 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      fetchVenues().then((data) => {
-        setAllVenues(data);
-        setDisplayedVenues(data.slice(0, VENUES_PER_PAGE));
-        setPage(1);
-      });
-    } else {
-      searchVenues(searchTerm).then((data) => {
-        setAllVenues(data);
-        setDisplayedVenues(data.slice(0, VENUES_PER_PAGE));
-        setPage(1);
-      });
-    }
+    const loadData = async () => {
+      const data = searchTerm.trim()
+        ? await searchVenues(searchTerm)
+        : await fetchVenues();
+      setAllVenues(data);
+      setDisplayedVenues(data.slice(0, VENUES_PER_PAGE));
+      setPage(1);
+    };
+    loadData();
   }, [searchTerm]);
 
   const loadMore = () => {
     const nextPage = page + 1;
-    const newDisplayed = allVenues.slice(0, nextPage * VENUES_PER_PAGE);
-    setDisplayedVenues(newDisplayed);
+    setDisplayedVenues(allVenues.slice(0, nextPage * VENUES_PER_PAGE));
     setPage(nextPage);
   };
 
@@ -62,9 +57,7 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       <section
         className="relative w-full h-[400px] bg-cover bg-center flex items-center justify-center"
-        style={{
-          backgroundImage: `url('/hero-bg.jpg')`,
-        }}
+        style={{ backgroundImage: `url('/hero-bg.jpg')` }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
         <div className="relative z-10 text-center max-w-6xl mx-auto px-4">

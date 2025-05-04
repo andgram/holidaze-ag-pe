@@ -41,7 +41,7 @@ interface Venue {
   };
 }
 
-function VenueDetails() {
+const VenueDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user, token } = useAuth();
   const navigate = useNavigate();
@@ -66,7 +66,6 @@ function VenueDetails() {
         const venueData = await fetchVenueById(id);
         setVenue(venueData);
       } catch (err) {
-        console.error("Failed to load venue:", err);
         setError("Failed to load venue");
       } finally {
         setLoading(false);
@@ -83,10 +82,14 @@ function VenueDetails() {
 
   const handleDelete = async () => {
     if (!token || !id) return;
-    const success = await deleteVenue(token, id);
-    if (success) {
-      navigate("/profile");
-    } else {
+    try {
+      const success = await deleteVenue(token, id);
+      if (success) {
+        navigate("/profile");
+      } else {
+        setError("Failed to delete venue");
+      }
+    } catch (err) {
       setError("Failed to delete venue");
     }
   };
@@ -133,27 +136,31 @@ function VenueDetails() {
     }
 
     setBookingLoading(true);
-    const booking = await createBooking(
-      token,
-      dateFrom.toISOString(),
-      dateTo.toISOString(),
-      guests,
-      id
-    );
-    setBookingLoading(false);
+    try {
+      const booking = await createBooking(
+        token,
+        dateFrom.toISOString(),
+        dateTo.toISOString(),
+        guests,
+        id
+      );
+      setBookingLoading(false);
 
-    if (booking) {
-      setBookingSuccess("Booking successful!");
-      setBookingError(null);
-      setTimeout(() => {
-        navigate("/profile");
-      }, 1500);
-    } else {
+      if (booking) {
+        setBookingSuccess("Booking successful!");
+        setBookingError(null);
+        setTimeout(() => {
+          navigate("/profile");
+        }, 1500);
+      } else {
+        setBookingError("Failed to create booking");
+      }
+    } catch (err) {
+      setBookingLoading(false);
       setBookingError("Failed to create booking");
     }
   };
 
-  // Helper function to check if the date is booked
   const isDateBooked = (date: Date) => {
     return venue?.bookings?.some((booking) => {
       const existingFrom = new Date(booking.dateFrom);
@@ -276,13 +283,25 @@ function VenueDetails() {
 
           <div className="bg-primary p-6 rounded-xl shadow-md">
             {isOwner && token ? (
-              <div className="space-y-4">
+              <div>
+                <h2 className="text-2xl font-semibold text-white mb-4">
+                  Manage Venue
+                </h2>
+                <button
+                  onClick={() => navigate(`/edit-venue/${venue.id}`)}
+                  className="w-full py-3 bg-accent text-text rounded-lg font-semibold hover:bg-accenthover transition focus:outline-none focus:ring-2 focus:ring-accent"
+                >
+                  Edit Venue
+                </button>
                 <button
                   onClick={handleDelete}
-                  className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+                  className="w-full mt-4 py-3 bg-text text-white rounded-lg font-semibold hover:bg-black transition focus:outline-none focus:ring-2 focus:ring-red-500"
                 >
                   Delete Venue
                 </button>
+                {error && (
+                  <p className="text-red-500 mt-4 text-center">{error}</p>
+                )}
               </div>
             ) : token ? (
               <div className="space-y-4">
@@ -345,6 +364,6 @@ function VenueDetails() {
       </div>
     </div>
   );
-}
+};
 
 export default VenueDetails;

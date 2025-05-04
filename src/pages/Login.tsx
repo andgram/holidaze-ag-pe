@@ -7,13 +7,18 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false); // State to track loading
+  const [passwordVisible, setPasswordVisible] = useState(false); // State for password visibility toggle
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true); // Set loading to true when submitting
     const result = await loginUser(email, password);
+    setLoading(false); // Set loading to false when the request completes
+
     if (result) {
       login(result.token, result.user);
       navigate("/profile");
@@ -59,23 +64,34 @@ function Login() {
             >
               Password:
             </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full p-3 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={passwordVisible ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full p-3 border border-secondary rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+              <button
+                type="button"
+                onClick={() => setPasswordVisible(!passwordVisible)}
+                className="absolute top-3 right-3 text-white"
+                aria-label={passwordVisible ? "Hide password" : "Show password"}
+              >
+                {passwordVisible ? "👁️" : "🙈"}
+              </button>
+            </div>
           </div>
 
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           <button
             type="submit"
+            disabled={loading}
             className="w-full py-3 bg-accent text-text font-semibold rounded-lg hover:bg-accenthover transition"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

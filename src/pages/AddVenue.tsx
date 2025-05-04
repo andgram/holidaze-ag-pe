@@ -43,8 +43,7 @@ function AddVenue() {
         } else {
           setLoading(false);
         }
-      } catch (err) {
-        console.error("Failed to fetch profile:", err);
+      } catch {
         navigate("/login");
       }
     };
@@ -94,8 +93,7 @@ function AddVenue() {
             Create a Venue
           </h2>
 
-          {/* --- Form fields below --- */}
-          {/* Venue Name */}
+          {/* Venue Name and Price */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="flex flex-col">
               <label
@@ -113,7 +111,6 @@ function AddVenue() {
               />
             </div>
 
-            {/* Price */}
             <div className="flex flex-col">
               <label
                 htmlFor="price"
@@ -197,7 +194,7 @@ function AddVenue() {
             </div>
           </div>
 
-          {/* Media Toggle */}
+          {/* Media */}
           <div className="mt-6">
             <button
               type="button"
@@ -226,7 +223,7 @@ function AddVenue() {
             )}
           </div>
 
-          {/* Location Toggle */}
+          {/* Location */}
           <div className="mt-6">
             <button
               type="button"
@@ -258,6 +255,7 @@ function AddVenue() {
             )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             className="mt-6 w-full bg-primary text-white py-3 rounded-xl hover:bg-accenthover transition"

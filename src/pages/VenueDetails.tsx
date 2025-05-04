@@ -44,6 +44,7 @@ function VenueDetails() {
   const [guests, setGuests] = useState<number>(1);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     const loadVenue = async () => {
@@ -132,10 +133,13 @@ function VenueDetails() {
     setBookingLoading(false);
 
     if (booking) {
-      alert("Booking successful!");
-      navigate("/profile");
+      setBookingSuccess("Booking successful!");
+      setBookingError(null);
+      setTimeout(() => {
+        navigate("/profile");
+      }, 1500);
     } else {
-      setBookingError("Failed to create booking - check console for API error");
+      setBookingError("Failed to create booking");
     }
   };
 
@@ -158,12 +162,17 @@ function VenueDetails() {
 
   return (
     <div className="bg-background min-h-screen p-8">
+      {bookingSuccess && (
+        <div className="mb-4 p-4 bg-accent border text-text rounded">
+          {bookingSuccess}
+        </div>
+      )}
       <div className="max-w-4xl mx-auto">
         <Link
-          to="/venues"
-          className="text-accent hover:text-accenthover underline mb-4 inline-block"
+          to="/"
+          className="text-text hover:text-accenthover underline mb-4 inline-block"
         >
-          ← Back to all venues
+          ← Back to venues
         </Link>
 
         {venue.media.length > 0 && (

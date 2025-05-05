@@ -72,16 +72,18 @@ function Profile() {
       setProfile(profileData);
       setVenues(venueData);
       setBio(profileData?.bio || "");
+
       setAvatarUrl(
         profileData?.avatar?.url === defaultApiAvatarUrl
-          ? defaultAvatar
+          ? ""
           : profileData?.avatar?.url || ""
       );
       setBannerUrl(
         profileData?.banner?.url === defaultApiBannerUrl
-          ? defaultBanner
+          ? ""
           : profileData?.banner?.url || ""
       );
+
       setVenueManager(profileData?.venueManager || false);
       setLoading(false);
     };
@@ -138,14 +140,27 @@ function Profile() {
       <div className="max-w-4xl w-full bg-background p-6 rounded-xl">
         <div className="relative w-full h-48">
           <img
-            src={bannerUrl || defaultBanner}
-            alt={profile?.banner?.alt || "Profile banner"}
-            className="w-full h-48 object-cover rounded-xl"
-          />
-          <img
-            src={avatarUrl || defaultAvatar}
+            src={
+              avatarUrl
+                ? avatarUrl
+                : profile?.avatar?.url === defaultApiAvatarUrl
+                ? defaultAvatar
+                : profile?.avatar?.url || defaultAvatar
+            }
             alt={profile?.avatar?.alt || "User avatar"}
             className="absolute bottom-[-2rem] left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full object-cover"
+          />
+
+          <img
+            src={
+              bannerUrl
+                ? bannerUrl
+                : profile?.banner?.url === defaultApiBannerUrl
+                ? defaultBanner
+                : profile?.banner?.url || defaultBanner
+            }
+            alt={profile?.banner?.alt || "Profile banner"}
+            className="w-full h-48 object-cover rounded-xl"
           />
         </div>
         <h1 className="text-3xl font-bold text-center text-primary mt-12 mb-6">

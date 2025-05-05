@@ -103,14 +103,14 @@ function Profile() {
 
     try {
       const avatarValue =
-        avatarUrl.trim() !== "" && avatarUrl !== profile?.avatar?.url
-          ? avatarUrl
-          : undefined;
+        avatarUrl.trim() === "" || avatarUrl === profile?.avatar?.url
+          ? undefined
+          : avatarUrl;
 
       const bannerValue =
-        bannerUrl.trim() !== "" && bannerUrl !== profile?.banner?.url
-          ? bannerUrl
-          : undefined;
+        bannerUrl.trim() === "" || bannerUrl === profile?.banner?.url
+          ? undefined
+          : bannerUrl;
 
       const updatedProfile = await updateProfile(
         token!,

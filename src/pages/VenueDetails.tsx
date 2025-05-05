@@ -169,20 +169,6 @@ const VenueDetails = () => {
     });
   };
 
-  const getBookedDates = () => {
-    return (venue?.bookings || []).flatMap((booking) => {
-      const startDate = new Date(booking.dateFrom);
-      const endDate = new Date(booking.dateTo);
-      const dates = [];
-      let currentDate = startDate;
-      while (currentDate <= endDate) {
-        dates.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-      return dates;
-    });
-  };
-
   if (loading) return <div className="text-center p-4">Loading venue...</div>;
   if (error) return <div className="text-center p-4 text-red-500">{error}</div>;
   if (!venue) return <div className="text-center p-4">Venue not found</div>;

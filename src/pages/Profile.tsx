@@ -21,7 +21,6 @@ function EditVenue() {
   const [city, setCity] = useState("");
   const [zip, setZip] = useState("");
   const [country, setCountry] = useState("");
-  const [venueManager, setVenueManager] = useState(false); // Added state for venueManager
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -48,39 +47,11 @@ function EditVenue() {
         setCity(venueData.location?.city || "");
         setZip(venueData.location?.zip || "");
         setCountry(venueData.location?.country || "");
-
-        // Set the venueManager status from the profile (if available)
-        setVenueManager(venueData.owner?.venueManager || false);
       }
       setLoading(false);
     };
     loadVenue();
   }, [token, id, navigate]);
-
-  const updateProfile = async (token: string, venueManager: boolean) => {
-    try {
-      const response = await fetch(`/holidaze/profiles/${id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          venueManager: venueManager,
-          // You can also update other fields like bio, avatar, etc., if needed
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Profile update failed");
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,13 +78,7 @@ function EditVenue() {
     );
 
     if (venue) {
-      // Now update the profile to set the venueManager status
-      const profileUpdate = await updateProfile(token!, venueManager);
-      if (profileUpdate) {
-        navigate(`/venues/${id}`);
-      } else {
-        setError("Failed to update venue or profile");
-      }
+      navigate(`/venues/${id}`);
     } else {
       setError("Failed to update venue");
     }
@@ -307,21 +272,6 @@ function EditVenue() {
                 </label>
               </div>
             </div>
-          </div>
-
-          <div className="mt-6">
-            <label htmlFor="venueManager" className="flex items-center">
-              <input
-                type="checkbox"
-                name="venueManager"
-                id="venueManager"
-                checked={venueManager}
-                onChange={(e) => setVenueManager(e.target.checked)}
-                className="mr-2 accent-accent"
-              />
-              Venue Manager{" "}
-              <span className="text-sm text-text opacity-60">(Admin only)</span>
-            </label>
           </div>
 
           <div className="mt-6">

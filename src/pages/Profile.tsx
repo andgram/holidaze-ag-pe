@@ -50,6 +50,11 @@ function Profile() {
 
   const defaultAvatar = "/placeholder-avatar.jpg";
   const defaultBanner = "/placeholder-banner.jpg";
+  const defaultApiAvatarUrl =
+    "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&h=400&w=400";
+
+  const defaultApiBannerUrl =
+    "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&h=500&w=1500";
 
   useEffect(() => {
     if (!token || !user?.name) {
@@ -67,8 +72,16 @@ function Profile() {
       setProfile(profileData);
       setVenues(venueData);
       setBio(profileData?.bio || "");
-      setAvatarUrl(profileData?.avatar?.url || "");
-      setBannerUrl(profileData?.banner?.url || "");
+      setAvatarUrl(
+        profileData?.avatar?.url === defaultApiAvatarUrl
+          ? defaultAvatar
+          : profileData?.avatar?.url || ""
+      );
+      setBannerUrl(
+        profileData?.banner?.url === defaultApiBannerUrl
+          ? defaultBanner
+          : profileData?.banner?.url || ""
+      );
       setVenueManager(profileData?.venueManager || false);
       setLoading(false);
     };

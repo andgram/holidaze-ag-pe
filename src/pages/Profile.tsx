@@ -1,293 +1,293 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { fetchVenueById, editVenue } from "../api/api";
+import {
+  fetchUserBookings,
+  fetchProfile,
+  updateProfile,
+  fetchUserVenues,
+} from "../api/api";
 
-function EditVenue() {
-  const { id } = useParams<{ id: string }>();
-  const { token } = useAuth();
+interface Booking {
+  id: string;
+  venue: { id: string; name: string };
+  dateFrom: string;
+  dateTo: string;
+  guests: number;
+}
+
+interface ProfileData {
+  name: string;
+  email: string;
+  bio?: string;
+  avatar?: { url: string; alt: string };
+  banner?: { url: string; alt: string };
+  venueManager: boolean;
+}
+
+interface Venue {
+  id: string;
+  name: string;
+}
+
+function Profile() {
+  const { user, token } = useAuth();
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [maxGuests, setMaxGuests] = useState("");
-  const [wifi, setWifi] = useState(false);
-  const [parking, setParking] = useState(false);
-  const [breakfast, setBreakfast] = useState(false);
-  const [pets, setPets] = useState(false);
-  const [mediaUrl, setMediaUrl] = useState("");
-  const [mediaAlt, setMediaAlt] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [zip, setZip] = useState("");
-  const [country, setCountry] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
+  const message = location.state?.message;
+  const [visibleMessage, setVisibleMessage] = useState(message);
+
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [bio, setBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [bannerUrl, setBannerUrl] = useState("");
+  const [venueManager, setVenueManager] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const defaultAvatar = "/placeholder-avatar.jpg";
+  const defaultBanner = "/placeholder-banner.jpg";
+  const defaultApiAvatarUrl =
+    "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&h=400&w=400";
+
+  const defaultApiBannerUrl =
+    "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&h=500&w=1500";
 
   useEffect(() => {
-    if (!token || !id) {
+    if (!token || !user?.name) {
       navigate("/login");
       return;
     }
 
-    const loadVenue = async () => {
-      const venueData = await fetchVenueById(id);
-      if (venueData) {
-        setName(venueData.name);
-        setDescription(venueData.description);
-        setPrice(String(venueData.price));
-        setMaxGuests(String(venueData.maxGuests));
-        setWifi(venueData.meta.wifi);
-        setParking(venueData.meta.parking);
-        setBreakfast(venueData.meta.breakfast);
-        setPets(venueData.meta.pets);
-        setMediaUrl(venueData.media[0]?.url || "");
-        setMediaAlt(venueData.media[0]?.alt || "");
-        setAddress(venueData.location?.address || "");
-        setCity(venueData.location?.city || "");
-        setZip(venueData.location?.zip || "");
-        setCountry(venueData.location?.country || "");
-      }
+    const loadData = async () => {
+      const [bookingData, profileData, venueData] = await Promise.all([
+        fetchUserBookings(token, user.name),
+        fetchProfile(token, user.name),
+        fetchUserVenues(token, user.name),
+      ]);
+      setBookings(bookingData);
+      setProfile(profileData);
+      setVenues(venueData);
+      setBio(profileData?.bio || "");
+      setAvatarUrl(
+        profileData?.avatar?.url === defaultApiAvatarUrl
+          ? defaultAvatar
+          : profileData?.avatar?.url || ""
+      );
+      setBannerUrl(
+        profileData?.banner?.url === defaultApiBannerUrl
+          ? defaultBanner
+          : profileData?.banner?.url || ""
+      );
+      setVenueManager(profileData?.venueManager || false);
       setLoading(false);
     };
-    loadVenue();
-  }, [token, id, navigate]);
+    loadData();
+  }, [token, user, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setVisibleMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (!id) return;
-
-    const venue = await editVenue(
-      token!,
-      id,
-      name,
-      description,
-      mediaUrl ? [{ url: mediaUrl, alt: mediaAlt || "Venue image" }] : [],
-      Number(price),
-      Number(maxGuests),
-      wifi,
-      parking,
-      breakfast,
-      pets,
-      address ? address : undefined,
-      city ? city : undefined,
-      zip ? zip : undefined,
-      country ? country : undefined
-    );
-
-    if (venue) {
-      navigate(`/venues/${id}`);
-    } else {
-      setError("Failed to update venue");
+    try {
+      const updatedProfile = await updateProfile(
+        token!,
+        user!.name,
+        bio !== profile?.bio ? bio : undefined,
+        avatarUrl && avatarUrl !== profile?.avatar?.url ? avatarUrl : undefined,
+        bannerUrl && bannerUrl !== profile?.banner?.url ? bannerUrl : undefined,
+        venueManager !== profile?.venueManager
+          ? venueManager
+            ? "true"
+            : "false"
+          : undefined
+      );
+      if (updatedProfile) {
+        setProfile(updatedProfile);
+        setEditMode(false);
+      } else {
+        setError("Failed to update profile");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update profile");
     }
   };
 
-  if (loading) return <div>Loading venue...</div>;
+  if (loading) {
+    return <div>Loading your profile...</div>;
+  }
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
-      style={{
-        backgroundImage: `url('/create-edit-bg.jpg')`,
-      }}
-    >
-      <div className="max-w-4xl mx-auto p-8 bg-secondary shadow-md rounded-xl my-12">
-        <form onSubmit={handleSubmit}>
-          <h2 className="text-3xl font-semibold text-center text-text mb-10">
-            Edit Venue
+    <div className="bg-white min-h-screen flex flex-col items-center p-6">
+      {visibleMessage && (
+        <div className="bg-yellow-100 text-yellow-800 p-4 rounded mb-4 w-full max-w-4xl">
+          {visibleMessage}
+        </div>
+      )}
+
+      <div className="max-w-4xl w-full bg-background p-6 rounded-xl">
+        <div className="relative w-full h-48">
+          <img
+            src={bannerUrl || defaultBanner}
+            alt={profile?.banner?.alt || "Profile banner"}
+            className="w-full h-48 object-cover rounded-xl"
+          />
+          <img
+            src={avatarUrl || defaultAvatar}
+            alt={profile?.avatar?.alt || "User avatar"}
+            className="absolute bottom-[-2rem] left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full object-cover"
+          />
+        </div>
+        <h1 className="text-3xl font-bold text-center text-primary mt-12 mb-6">
+          Welcome, {profile?.name}
+        </h1>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4 text-text">
+            Profile Info
           </h2>
+          <p className="text-lg text-text">Email: {profile?.email}</p>
+          <p className="text-lg text-text">
+            Bio: {profile?.bio || "No bio set"}
+          </p>
+          <p className="text-lg text-text mt-2">
+            Venue Manager: {profile?.venueManager ? "Yes" : "No"}
+          </p>
+          <button
+            onClick={() => setEditMode(!editMode)}
+            className="mt-4 px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-accenthover transition"
+          >
+            {editMode ? "Cancel" : "Edit Profile"}
+          </button>
+        </section>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="flex flex-col">
+        {editMode && (
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <div>
               <label
-                htmlFor="name"
-                className="text-lg font-medium text-text mb-2"
+                htmlFor="bio"
+                className="block text-lg font-medium text-text"
               >
-                Venue Name
+                Bio (optional):
               </label>
-              <input
-                name="name"
-                id="name"
-                placeholder="Venue Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="border border-secondary p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              <textarea
+                id="bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                rows={3}
+                className="w-full p-3 border border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
-
-            <div className="flex flex-col">
+            <div>
               <label
-                htmlFor="price"
-                className="text-lg font-medium text-text mb-2"
+                htmlFor="avatarUrl"
+                className="block text-lg font-medium text-text"
               >
-                Price
+                Avatar URL (optional):
               </label>
-              <input
-                name="price"
-                id="price"
-                placeholder="Price"
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                min="0"
-                required
-                className="border border-secondary p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col mt-6">
-            <label
-              htmlFor="description"
-              className="text-lg font-medium text-text mb-2"
-            >
-              Description
-            </label>
-            <textarea
-              name="description"
-              id="description"
-              placeholder="Description"
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              className="border border-secondary p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-6">
-            <div className="flex flex-col">
-              <label
-                htmlFor="maxGuests"
-                className="text-lg font-medium text-text mb-2"
-              >
-                Maximum Guests
-              </label>
-              <input
-                name="maxGuests"
-                id="maxGuests"
-                placeholder="Maximum Guests"
-                type="number"
-                value={maxGuests}
-                onChange={(e) => setMaxGuests(e.target.value)}
-                min="1"
-                required
-                className="border border-secondary p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
-              />
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <label className="text-lg font-medium text-text">Media</label>
-            <div className="mt-4">
               <input
                 type="url"
-                value={mediaUrl}
-                onChange={(e) => setMediaUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
-                className="w-full p-3 border border-secondary rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent mb-4"
+                id="avatarUrl"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                placeholder="https://example.com/avatar.jpg"
+                className="w-full p-3 border border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
               />
+            </div>
+            <div>
+              <label
+                htmlFor="bannerUrl"
+                className="block text-lg font-medium text-text"
+              >
+                Banner URL (optional):
+              </label>
               <input
-                type="text"
-                value={mediaAlt}
-                onChange={(e) => setMediaAlt(e.target.value)}
-                placeholder="Image description"
-                className="w-full p-3 border border-secondary rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                type="url"
+                id="bannerUrl"
+                value={bannerUrl}
+                onChange={(e) => setBannerUrl(e.target.value)}
+                placeholder="https://example.com/banner.jpg"
+                className="w-full p-3 border border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
-          </div>
-
-          <div className="mt-6">
-            <p className="font-medium text-lg text-text">Facilities</p>
-            <div className="space-y-4 mt-4">
-              <p className="text-sm text-text opacity-60">
-                If not selected, options will default to "Not
-                included/allowed/available".
-              </p>
-              <div>
-                <label htmlFor="wifi" className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="wifi"
-                    id="wifi"
-                    checked={wifi}
-                    onChange={(e) => setWifi(e.target.checked)}
-                    className="mr-2 accent-accent"
-                  />
-                  Wifi{" "}
-                  <span className="text-sm text-text opacity-60">
-                    (Optional)
-                  </span>
-                </label>
-              </div>
-              <div>
-                <label htmlFor="parking" className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="parking"
-                    id="parking"
-                    checked={parking}
-                    onChange={(e) => setParking(e.target.checked)}
-                    className="mr-2 accent-accent"
-                  />
-                  Parking{" "}
-                  <span className="text-sm text-text opacity-60">
-                    (Optional)
-                  </span>
-                </label>
-              </div>
-              <div>
-                <label htmlFor="breakfast" className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="breakfast"
-                    id="breakfast"
-                    checked={breakfast}
-                    onChange={(e) => setBreakfast(e.target.checked)}
-                    className="mr-2 accent-accent"
-                  />
-                  Breakfast{" "}
-                  <span className="text-sm text-text opacity-60">
-                    (Optional)
-                  </span>
-                </label>
-              </div>
-              <div>
-                <label htmlFor="pets" className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="pets"
-                    id="pets"
-                    checked={pets}
-                    onChange={(e) => setPets(e.target.checked)}
-                    className="mr-2 accent-accent"
-                  />
-                  Pets Allowed{" "}
-                  <span className="text-sm text-text opacity-60">
-                    (Optional)
-                  </span>
-                </label>
-              </div>
+            <div>
+              <label className="block text-lg font-medium text-text">
+                Venue Manager:
+              </label>
+              <input
+                type="checkbox"
+                checked={venueManager}
+                onChange={(e) => setVenueManager(e.target.checked)}
+                className="h-5 w-5 accent-accent"
+              />
             </div>
-          </div>
-
-          <div className="mt-6">
             <button
               type="submit"
-              className="mt-6 w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-accenthover transition"
+              className="w-full py-3 bg-accent text-text font-semibold rounded-lg hover:bg-accenthover transition"
             >
-              Update Venue
+              Save Changes
             </button>
-          </div>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
+          </form>
+        )}
+      </div>
 
-          {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
-        </form>
+      <div className="flex flex-col lg:flex-row lg:gap-6 max-w-4xl w-full mt-8">
+        <section className="bg-background p-6 rounded-xl flex-1">
+          <h2 className="text-2xl font-semibold mb-4 text-text">
+            Your Upcoming Bookings
+          </h2>
+          {bookings.length === 0 ? (
+            <p className="text-text">No upcoming bookings found.</p>
+          ) : (
+            <ul>
+              {bookings.map((booking) => (
+                <li key={booking.id} className="mb-4">
+                  <h3 className="text-xl font-semibold text-text">
+                    {booking.venue.name}
+                  </h3>
+                  <p className="text-text">
+                    From: {new Date(booking.dateFrom).toLocaleDateString()} -
+                    To: {new Date(booking.dateTo).toLocaleDateString()}
+                  </p>
+                  <p className="text-text">Guests: {booking.guests}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="bg-background p-6 rounded-xl flex-1 lg:mt-0 mt-6">
+          <h2 className="text-2xl font-semibold mb-4 text-text">Your Venues</h2>
+          {venues.length === 0 ? (
+            <p className="text-text">No venues created yet.</p>
+          ) : (
+            <ul>
+              {venues.map((venue) => (
+                <li key={venue.id} className="mb-4">
+                  <Link to={`/venues/${venue.id}`} className="text-accent">
+                    <h3 className="text-xl text-text underline hover:text-accenthover">
+                      {venue.name}
+                    </h3>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     </div>
   );
 }
 
-export default EditVenue;
+export default Profile;

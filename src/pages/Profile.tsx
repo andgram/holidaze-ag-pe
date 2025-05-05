@@ -102,18 +102,29 @@ function Profile() {
     setError(null);
 
     try {
+      const avatarValue =
+        avatarUrl.trim() !== "" && avatarUrl !== profile?.avatar?.url
+          ? avatarUrl
+          : undefined;
+
+      const bannerValue =
+        bannerUrl.trim() !== "" && bannerUrl !== profile?.banner?.url
+          ? bannerUrl
+          : undefined;
+
       const updatedProfile = await updateProfile(
         token!,
         user!.name,
         bio !== profile?.bio ? bio : undefined,
-        avatarUrl && avatarUrl !== profile?.avatar?.url ? avatarUrl : undefined,
-        bannerUrl && bannerUrl !== profile?.banner?.url ? bannerUrl : undefined,
+        avatarValue,
+        bannerValue,
         venueManager !== profile?.venueManager
           ? venueManager
             ? "true"
             : "false"
           : undefined
       );
+
       if (updatedProfile) {
         setProfile(updatedProfile);
         setEditMode(false);

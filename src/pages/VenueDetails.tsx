@@ -183,8 +183,6 @@ const VenueDetails = () => {
     });
   };
 
-  const bookedDates = getBookedDates();
-
   if (loading) return <div className="text-center p-4">Loading venue...</div>;
   if (error) return <div className="text-center p-4 text-red-500">{error}</div>;
   if (!venue) return <div className="text-center p-4">Venue not found</div>;

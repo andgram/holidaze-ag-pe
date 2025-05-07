@@ -48,14 +48,6 @@ function Profile() {
   const [venueManager, setVenueManager] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const defaultAvatar = "/placeholder-avatar.jpg";
-  const defaultBanner = "/placeholder-banner.jpg";
-  const defaultApiAvatarUrl =
-    "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&h=400&w=400";
-
-  const defaultApiBannerUrl =
-    "https://images.unsplash.com/photo-1579547945413-497e1b99dac0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&h=500&w=1500";
-
   useEffect(() => {
     if (!token || !user?.name) {
       navigate("/login");
@@ -72,16 +64,8 @@ function Profile() {
       setProfile(profileData);
       setVenues(venueData);
       setBio(profileData?.bio || "");
-      setAvatarUrl(
-        profileData?.avatar?.url === defaultApiAvatarUrl
-          ? defaultAvatar
-          : profileData?.avatar?.url || ""
-      );
-      setBannerUrl(
-        profileData?.banner?.url === defaultApiBannerUrl
-          ? defaultBanner
-          : profileData?.banner?.url || ""
-      );
+      setAvatarUrl(profileData?.avatar?.url || "");
+      setBannerUrl(profileData?.banner?.url || "");
       setVenueManager(profileData?.venueManager || false);
       setLoading(false);
     };
@@ -99,19 +83,55 @@ function Profile() {
     e.preventDefault();
     setError(null);
 
+    const fieldsToUpdate: any = {};
+
+    if (bio !== profile?.bio) {
+      fieldsToUpdate.bio = bio;
+    }
+
+    if (venueManager !== profile?.venueManager) {
+      fieldsToUpdate.venueManager = venueManager;
+    }
+
+    if (
+      avatarUrl &&
+      avatarUrl.trim() !== "" &&
+      avatarUrl !== profile?.avatar?.url
+    ) {
+      fieldsToUpdate.avatar = {
+        url: avatarUrl,
+        alt: "User avatar",
+      };
+    }
+
+    if (
+      bannerUrl &&
+      bannerUrl.trim() !== "" &&
+      bannerUrl !== profile?.banner?.url
+    ) {
+      fieldsToUpdate.banner = {
+        url: bannerUrl,
+        alt: "Profile banner",
+      };
+    }
+
+    if (Object.keys(fieldsToUpdate).length === 0) {
+      setError("You must update at least one field.");
+      return;
+    }
+
     try {
       const updatedProfile = await updateProfile(
         token!,
         user!.name,
-        bio !== profile?.bio ? bio : undefined,
-        avatarUrl && avatarUrl !== profile?.avatar?.url ? avatarUrl : undefined,
-        bannerUrl && bannerUrl !== profile?.banner?.url ? bannerUrl : undefined,
-        venueManager !== profile?.venueManager
-          ? venueManager
-            ? "true"
-            : "false"
-          : undefined
+        fieldsToUpdate.bio,
+        fieldsToUpdate.avatar?.url,
+        fieldsToUpdate.avatar?.alt,
+        fieldsToUpdate.banner?.url,
+        fieldsToUpdate.banner?.alt,
+        fieldsToUpdate.venueManager
       );
+
       if (updatedProfile) {
         setProfile(updatedProfile);
         setEditMode(false);
@@ -138,12 +158,12 @@ function Profile() {
       <div className="max-w-4xl w-full bg-background p-6 rounded-xl">
         <div className="relative w-full h-48">
           <img
-            src={bannerUrl || defaultBanner}
+            src={profile?.banner?.url || ""}
             alt={profile?.banner?.alt || "Profile banner"}
             className="w-full h-48 object-cover rounded-xl"
           />
           <img
-            src={avatarUrl || defaultAvatar}
+            src={profile?.avatar?.url || ""}
             alt={profile?.avatar?.alt || "User avatar"}
             className="absolute bottom-[-2rem] left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full object-cover"
           />

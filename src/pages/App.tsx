@@ -74,7 +74,6 @@ function App() {
             />
             <button
               type="button"
-              onClick={() => searchTerm.trim() && searchVenues(searchTerm)}
               className="px-4 py-4 bg-accent text-text font-semibold rounded-r-lg hover:bg-accenthover transition"
             >
               Search
@@ -99,10 +98,10 @@ function App() {
                     className="bg-background transition duration-500 hover:bg-white rounded-xl shadow-md overflow-hidden"
                   >
                     <Link to={`/venues/${venue.id}`}>
-                      {venue.media.length > 0 && (
+                      {venue.media?.[0]?.url && (
                         <img
                           src={venue.media[0].url}
-                          alt={venue.media[0].alt}
+                          alt={venue.media[0].alt || "Venue image"}
                           className="w-full h-48 object-cover"
                         />
                       )}

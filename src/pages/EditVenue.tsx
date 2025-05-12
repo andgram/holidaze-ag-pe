@@ -4,7 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import { fetchVenueById, editVenue } from "../api/api";
 
 function EditVenue() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams();
+  const id = params.id;
   const { token } = useAuth();
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -37,12 +38,12 @@ function EditVenue() {
         setDescription(venueData.description);
         setPrice(String(venueData.price));
         setMaxGuests(String(venueData.maxGuests));
-        setWifi(venueData.meta.wifi);
-        setParking(venueData.meta.parking);
-        setBreakfast(venueData.meta.breakfast);
-        setPets(venueData.meta.pets);
-        setMediaUrl(venueData.media[0]?.url || "");
-        setMediaAlt(venueData.media[0]?.alt || "");
+        setWifi(venueData.meta?.wifi || false);
+        setParking(venueData.meta?.parking || false);
+        setBreakfast(venueData.meta?.breakfast || false);
+        setPets(venueData.meta?.pets || false);
+        setMediaUrl(venueData.media?.[0]?.url || "");
+        setMediaAlt(venueData.media?.[0]?.alt || "");
         setAddress(venueData.location?.address || "");
         setCity(venueData.location?.city || "");
         setZip(venueData.location?.zip || "");
@@ -57,10 +58,10 @@ function EditVenue() {
     e.preventDefault();
     setError(null);
 
-    if (!id) return;
+    if (!id || !token) return;
 
     const venue = await editVenue(
-      token!,
+      token,
       id,
       name,
       description,
@@ -71,10 +72,10 @@ function EditVenue() {
       parking,
       breakfast,
       pets,
-      address ? address : undefined,
-      city ? city : undefined,
-      zip ? zip : undefined,
-      country ? country : undefined
+      address || undefined,
+      city || undefined,
+      zip || undefined,
+      country || undefined
     );
 
     if (venue) {

@@ -6,6 +6,7 @@ import { createVenue, fetchProfile } from "../api/api";
 function AddVenue() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -43,42 +44,48 @@ function AddVenue() {
         } else {
           setLoading(false);
         }
-      } catch {
+      } catch (err) {
+        console.error("Error fetching profile:", err);
         navigate("/login");
       }
     };
     checkAccess();
   }, [token, user, navigate]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    const venue = await createVenue(
-      token!,
-      name,
-      description,
-      mediaUrl ? [{ url: mediaUrl, alt: mediaAlt || "Venue image" }] : [],
-      Number(price),
-      Number(maxGuests),
-      wifi,
-      parking,
-      breakfast,
-      pets,
-      showLocation && address ? address : undefined,
-      showLocation && city ? city : undefined,
-      showLocation && zip ? zip : undefined,
-      showLocation && country ? country : undefined
-    );
+    try {
+      const venue = await createVenue(
+        token!,
+        name,
+        description,
+        mediaUrl ? [{ url: mediaUrl, alt: mediaAlt || "Venue image" }] : [],
+        Number(price),
+        Number(maxGuests),
+        wifi,
+        parking,
+        breakfast,
+        pets,
+        showLocation && address ? address : undefined,
+        showLocation && city ? city : undefined,
+        showLocation && zip ? zip : undefined,
+        showLocation && country ? country : undefined
+      );
 
-    if (venue) {
-      navigate("/profile");
-    } else {
-      setError("Failed to create venue");
+      if (venue?.id) {
+        navigate("/profile");
+      } else {
+        setError(
+          "Failed to create venue. Please check your input and try again."
+        );
+      }
+    } catch (err) {
+      console.error("Venue creation error:", err);
+      setError("An unexpected error occurred while creating the venue.");
     }
   };
 

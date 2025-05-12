@@ -21,7 +21,7 @@ function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true); // Set loading state to true when submitting
+    setLoading(true);
 
     // Basic validation
     if (!name.match(/^[a-zA-Z0-9_]+$/)) {
@@ -77,7 +77,7 @@ function Register() {
       venueManager
     );
 
-    setLoading(false); // Set loading state to false after the request
+    setLoading(false);
 
     if (result?.success) {
       navigate("/login");

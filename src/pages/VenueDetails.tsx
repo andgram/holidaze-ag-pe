@@ -123,6 +123,10 @@ const VenueDetails = () => {
       setBookingError(`Guests cannot exceed ${venue.maxGuests}`);
       return;
     }
+    if (dateFrom >= dateTo) {
+      setBookingError("End date must be after start date");
+      return;
+    }
 
     const isOverlapping = (venue?.bookings || []).some((booking) => {
       const existingFrom = new Date(booking.dateFrom);
@@ -175,6 +179,11 @@ const VenueDetails = () => {
 
   const isOwner = user?.name === venue.owner.name;
 
+  const handleGuestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    setGuests(isNaN(value) ? 1 : value);
+  };
+
   return (
     <div className="bg-background min-h-screen p-8">
       {bookingSuccess && (
@@ -190,6 +199,7 @@ const VenueDetails = () => {
           ← Back to venues
         </Link>
 
+        {/* Image of the venue */}
         {venue.media.length > 0 && (
           <div className="relative h-64 mb-6">
             <img
@@ -314,7 +324,7 @@ const VenueDetails = () => {
                     min={1}
                     max={venue.maxGuests}
                     value={guests}
-                    onChange={(e) => setGuests(parseInt(e.target.value))}
+                    onChange={handleGuestsChange}
                     className="w-full p-2 rounded"
                   />
                 </div>
